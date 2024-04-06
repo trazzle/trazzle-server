@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class SearchCountryDto {
@@ -10,6 +11,15 @@ export class SearchCountryDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @ApiProperty({
+    required: false,
+    description: "국가코드",
+    example: "KR",
+  })
+  @IsOptional()
+  @IsString()
+  code?: string;
 
   @ApiProperty({
     required: false,
@@ -26,6 +36,9 @@ export class SearchCountryDto {
     example: 116,
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
   @IsNumber()
   cursor?: number;
 }

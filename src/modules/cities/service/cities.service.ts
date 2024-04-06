@@ -20,7 +20,6 @@ export class CitiesService {
   findAll(searchCityDto: SearchCityDto) {
     return this.prismaService.city.findMany({
       take: TAKE_20_PER_PAGE,
-      skip: 1,
       cursor: {
         id: searchCityDto.cursor ?? 1,
       },

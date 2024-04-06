@@ -27,6 +27,9 @@ export class SearchCityDto {
     example: 65854,
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
   @IsNumber()
   cursor?: number;
 }
