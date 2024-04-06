@@ -25,7 +25,7 @@ export class CountriesService {
       take: TAKE_20_PER_PAGE,
       skip: 1,
       cursor: {
-        id: dto.cursor,
+        id: dto.cursor ?? 1,
       },
       where: {
         OR: [

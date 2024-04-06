@@ -23,7 +23,7 @@ export class SearchCountryDto {
   @ApiProperty({
     required: false,
     description: "페이지 커서(국가 넘버 PK)",
-    example: 21,
+    example: 116,
   })
   @IsOptional()
   @IsNumber()
