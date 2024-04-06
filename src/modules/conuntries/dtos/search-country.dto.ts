@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class SearchCountryDto {
   @ApiProperty({
@@ -19,4 +19,13 @@ export class SearchCountryDto {
   @IsOptional()
   @IsString()
   continent?: string;
+
+  @ApiProperty({
+    required: false,
+    description: "페이지 커서(국가 넘버 PK)",
+    example: 21,
+  })
+  @IsOptional()
+  @IsNumber()
+  cursor?: number;
 }

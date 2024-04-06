@@ -24,6 +24,9 @@ export class CountriesService {
     return this.prismaService.country.findMany({
       take: TAKE_20_PER_PAGE,
       skip: 1,
+      cursor: {
+        id: dto.cursor,
+      },
       where: {
         OR: [
           {
