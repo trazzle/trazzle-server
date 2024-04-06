@@ -21,6 +21,9 @@ export class CitiesService {
     return this.prismaService.city.findMany({
       take: TAKE_20_PER_PAGE,
       skip: 1,
+      cursor: {
+        id: searchCityDto.cursor,
+      },
       where: {
         AND: [
           {
