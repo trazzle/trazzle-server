@@ -59,7 +59,8 @@ model TravelImage {
 }
 
 model Country {
-  code      String   @id
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
   name      String   @unique
   continent String? // 대륙
   createdAt DateTime @default(now()) // 생성일
