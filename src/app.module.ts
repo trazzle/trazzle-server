@@ -8,6 +8,7 @@ import { UsersModule } from "./modules/users/users.module";
 import { TravelNotesModule } from "src/modules/travel-notes/travel-notes.module";
 import { CountriesModule } from "src/modules/conuntries/countries.module";
 import { CitiesModule } from "src/modules/cities/cities.module";
+import { MagnetsModule } from './modules/magnets/magnets.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CitiesModule } from "src/modules/cities/cities.module";
       { path: "/api/travel-notes", module: TravelNotesModule },
       { path: "/api/countries", module: CountriesModule },
       { path: "/api/cities", module: CitiesModule },
+      { path: "/api/magnets", module: MagnetsModule },
     ]),
   ],
   controllers: [AppController],

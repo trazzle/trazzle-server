@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateCityDto } from "../dto/create-city.dto";
 import { UpdateCityDto } from "../dto/update-city.dto";
 import { SearchCityDto } from "../dto/search-city.dto";
