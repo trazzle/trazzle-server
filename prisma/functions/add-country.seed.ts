@@ -2,21 +2,24 @@
 import fs from "fs";
 import path from "path";
 
-const addCountry = async (prisma) => {
+const addCountry = async prisma => {
   const file = fs.readFileSync(path.join(__dirname, "..", "data", "CountiesAndCity.json"), "utf-8");
-  const countries = JSON.parse(file).filter((c) => c.cities);
+  const countries = JSON.parse(file).filter(c => c.cities);
 
-  const result = countries.map((c) => {
-    return prisma.country.create({
-      data: {
-        code: c.id,
-        name: c.name_y || c.name_x,
-        continent: c.region,
-      },
-    });
+  const result = countries.map(c => {
+    return prisma.country
+      .create({
+        data: {
+          code: c.id,
+          name: c.name_y || c.name_x,
+          continent: c.region,
+        },
+      })
+      .then(() => console.log(`[Country] ${c.name_y || c.name_x}`));
   });
 
   await Promise.all(result);
+  console.log("[Country] 국가 데이터 추가 완료");
 };
 
 export default addCountry;
