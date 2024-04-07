@@ -3,14 +3,23 @@ import { Country } from "@prisma/client";
 
 export class CountryEntity implements Country {
   @ApiProperty({
+    description: "국가 PK",
+    example: 116,
+    uniqueItems: true,
+  })
+  id: number;
+
+  @ApiProperty({
     description: "국가코드",
     example: "KR",
+    uniqueItems: true,
   })
   code: string;
 
   @ApiProperty({
     description: "국가명",
     example: "South Korea",
+    uniqueItems: true,
   })
   name: string;
 

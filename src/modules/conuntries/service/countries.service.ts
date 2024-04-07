@@ -21,16 +21,17 @@ export class CountriesService {
   }
 
   findAll(dto: SearchCountryDto): Promise<CountryEntity[]> {
+    const { cursor, name, continent } = dto;
+
     return this.prismaService.country.findMany({
       take: TAKE_20_PER_PAGE,
-      skip: 1,
+      cursor: {
+        id: cursor ?? 1,
+      },
       where: {
-        OR: [
-          {
-            name: {
-              contains: dto.name,
-            },
-          },
+        AND: [
+          { name: { contains: dto.name } },
+          { code: { contains: dto.code } },
           {
             continent: dto.continent,
           },

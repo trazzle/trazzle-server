@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class SearchCityDto {
   @ApiProperty({
@@ -20,4 +20,16 @@ export class SearchCityDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @ApiProperty({
+    required: false,
+    description: "페이지 커서(도시 넘버 PK)",
+    example: 65854,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  @IsNumber()
+  cursor?: number;
 }

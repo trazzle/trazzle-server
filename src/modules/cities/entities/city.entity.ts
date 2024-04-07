@@ -3,7 +3,8 @@ import { City } from "@prisma/client";
 export class CityEntity implements City {
   @ApiProperty({
     description: "도시 PK",
-    example: 1,
+    example: 65854,
+    uniqueItems: true,
   })
   id: number;
 
