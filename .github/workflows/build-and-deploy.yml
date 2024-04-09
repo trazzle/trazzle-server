@@ -22,11 +22,18 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '20'
+          cache: 'npm' # 캐싱
+      - name: Docker Login
+        run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Docker Build And Push
-        run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ steps.current_time.outputs.time }} .
-          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ steps.current_time.outputs.time }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: "${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ steps.current_time.outputs.time }}"
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:cache
+          cache-to: type=inline
+
   deploy:
     runs-on: ubuntu-latest
     environment: production
@@ -43,9 +50,9 @@ jobs:
             docker rm -f $(docker ps -aq) >/dev/null 2>&1
             docker rmi -f $(docker images -q) >/dev/null 2>&1
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ needs.build.outputs.current_time }}
-            docker run -d -p ${{ secrets.SERVER_PORT }}:10655 --name trazzle-api \
+            docker run -d -p ${{ secrets.APP_PORT }}:${{ secrets.DOCKER_CONTAINER_EXPOSE }} --name trazzle-api \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
-            -e SERVER_PORT=10655 \
+            -e SERVER_PORT=${{ secrets.DOCKER_CONTAINER_EXPOSE }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             -e DB_HOST=${{ secrets.DB_HOST }} \
