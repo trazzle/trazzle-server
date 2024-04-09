@@ -43,7 +43,7 @@ jobs:
             docker rm -f $(docker ps -aq) >/dev/null 2>&1
             docker rmi -f $(docker images -q) >/dev/null 2>&1
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ needs.build.outputs.current_time }}
-            docker run -d -p 80:10655 --name trazzle-api \
+            docker run -d -p ${{ secrets.SERVER_PORT }}:10655 --name trazzle-api \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
             -e SERVER_PORT=10655 \
             -e DB_USER=${{ secrets.DB_USER }} \
