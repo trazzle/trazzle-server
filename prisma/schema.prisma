@@ -70,12 +70,22 @@ model Country {
 
 model City {
   id          Int          @id @default(autoincrement()) // PK
-  name        String       
+  name        String
   country     Country      @relation(fields: [countryCode], references: [code])
   countryCode String // 참조키
   latitude    String?
-  longitude    String?
+  longitude   String?
   createdAt   DateTime     @default(now()) // 생성일
   updatedAt   DateTime     @updatedAt // 수정일
   TravelNote  TravelNote[]
+  Magnet      Magnet[]
+}
+
+model Magnet {
+  id        Int      @id @default(autoincrement()) // PK
+  url       String   @unique
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  cityId    Int
+  createdAt DateTime @default(now()) // 생성일
+  updatedAt DateTime @updatedAt // 수정일
 }

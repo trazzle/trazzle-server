@@ -3,7 +3,6 @@ import { CreateTravelNoteDto } from "../dtos/req/create-travel-note.dto";
 import { UpdateTravelNoteDto } from "src/modules/travel-notes/dtos/req/update-travel-note.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 import { v4 as uuidv4 } from "uuid";
-import { TravelImageEntity } from "src/modules/travel-notes/entities/travel-image.entity";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { putObjectCommandDto } from "src/modules/core/aws-s3/dtos/s3-command.dto";
 import { Prisma } from "@prisma/client";
