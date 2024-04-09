@@ -31,8 +31,8 @@ jobs:
           context: .
           push: true
           tags: "${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ steps.current_time.outputs.time }}"
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:cache
-          cache-to: type=inline
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     runs-on: ubuntu-latest
