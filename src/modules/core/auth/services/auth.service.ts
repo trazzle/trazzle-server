@@ -4,9 +4,7 @@ import TrazzleJwtPayload from "src/modules/core/auth/jwt/trazzle-jwt.payload";
 import ENV_KEY from "src/modules/core/config/constants/env-config.constant";
 import { CustomConfigService } from "src/modules/core/config/custom-config.service";
 import { RedisService } from "src/modules/core/redis/redis.service";
-import { SignInOrSignUpRequestBodyDto } from "src/modules/users/dtos/req/sign-in-sign-up-request-body.dto";
 import { PrismaService } from "../../database/prisma/prisma.service";
-import { AuthHelper } from "../helpers/auth.helper";
 
 @Injectable()
 export class AuthService {
@@ -15,10 +13,8 @@ export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly customConfigService: CustomConfigService,
-
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
-    private readonly authHelper: AuthHelper,
   ) {
     this.JWT_ACCESS_TOKEN_EXPIRATION_TTL = +this.customConfigService.get(ENV_KEY.JWT_ACCESS_TOKEN_EXPIRATION_TTL);
     this.JWT_REFRESH_TOKEN_EXPIRATION_TTL = +this.customConfigService.get(ENV_KEY.JWT_REFRESH_TOKEN_EXPIRATION_TTL);

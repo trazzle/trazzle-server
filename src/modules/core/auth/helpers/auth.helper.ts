@@ -3,10 +3,6 @@ import { BadRequestException, Inject, Injectable, NotFoundException, Unauthorize
 import { OAuthSocialLoginType } from "../constants/oauth.constant";
 import { SignInOrSignUpRequestBodyDto } from "src/modules/users/dtos/req/sign-in-sign-up-request-body.dto";
 import { AuthService } from "../services/auth.service";
-import { RedisService } from "../../redis/redis.service";
-import { JwtService } from "@nestjs/jwt";
-import { CustomConfigService } from "../../config/custom-config.service";
-import ENV_KEY from "../../config/constants/env-config.constant";
 import { GOOGLE_OAUTH_CLIENT_TOKEN, JWK_CLIENT_TOKEN } from "../constants/auth.constant";
 import jwt, { Jwt, JwtPayload } from "jsonwebtoken";
 import { OAuth2Client, TokenInfo } from "google-auth-library";
@@ -14,7 +10,6 @@ import JwksRsa, { SigningKey } from "jwks-rsa";
 import { PrismaService } from "../../database/prisma/prisma.service";
 import { firstValueFrom } from "rxjs";
 import { SocialLoginResponseDto } from "src/modules/users/dtos/res/social-login-response.dto";
-import { profile } from "console";
 
 @Injectable()
 export class AuthHelper {

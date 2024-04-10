@@ -35,7 +35,6 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authHelperService: AuthHelper,
-    private readonly customConfigService: CustomConfigService,
     private readonly authService: AuthService,
   ) {}
 
