@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const tokenFromRedis = await this.redisService.get(`user-${userId}`);
 
       if (!tokenFromRedis) {
-        throw new UnauthorizedException("토큰이 만료하였습니다.");
+        throw new UnauthorizedException("액세스 토큰이 만료하였습니다.");
       }
 
       const user: User | null = await this.prismaService.user.findFirst({
