@@ -27,12 +27,14 @@ import {
 } from "../dtos/req/sign-in-sign-up-request-body.dto";
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { SocialLoginResponseDto } from "../dtos/res/social-login-response.dto";
+import { AuthHelper } from "src/modules/core/auth/helpers/auth.helper";
 
 @ApiTags("사용자 & 로그인")
 @Controller()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
+    private readonly authHelperService: AuthHelper,
     private readonly customConfigService: CustomConfigService,
     private readonly authService: AuthService,
   ) {}
@@ -81,7 +83,7 @@ export class UsersController {
   })
   @Post("sign-in/kakao")
   async signInKakao(@Body() body: SignInOrSignUpKakaoRequestBodyDto) {
-    const loginUserInfo = await this.authService.signInKakao(body);
+    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
     return loginUserInfo;
   }
 
@@ -94,7 +96,7 @@ export class UsersController {
   })
   @Post("sign-in/apple")
   async signInApple(@Body() body: SignInOrSignUpAppleRequestBodyDto) {
-    const loginUserInfo = await this.authService.signInApple(body);
+    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
     return loginUserInfo;
   }
 
@@ -107,7 +109,7 @@ export class UsersController {
   })
   @Post("sign-in/google")
   async signInGoogle(@Body() body: SignInOrSignUpGoogleRequestBodyDto) {
-    const loginUserInfo = await this.authService.signInGoogle(body);
+    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
     return loginUserInfo;
   }
 
@@ -145,4 +147,14 @@ export class UsersController {
       profileImageFile: file,
     });
   }
+
+  // @ApiTags("액세스 토큰 갱신")
+  // @UseGuards(JwtAuthGuard)
+  // @Patch("token")
+  // async updateAccessToken(@SignInUser() user: UserEntity, @Body() body: UpdateAccessTokenRequestDto) {
+  //   const { refreshToken } = body;
+  //   const { id } = user;
+
+  //   const
+  // }
 }
