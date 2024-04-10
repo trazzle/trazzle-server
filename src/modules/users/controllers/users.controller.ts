@@ -16,14 +16,12 @@ import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { UserEntity } from "../entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { AuthService } from "src/modules/core/auth/services/auth.service";
-import { CustomConfigService } from "src/modules/core/config/custom-config.service";
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   SignInOrSignUpAppleRequestBodyDto,
   SignInOrSignUpGoogleRequestBodyDto,
   SignInOrSignUpKakaoRequestBodyDto,
-  SignInOrSignUpRequestBodyDto,
 } from "../dtos/req/sign-in-sign-up-request-body.dto";
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { SocialLoginResponseDto } from "../dtos/res/social-login-response.dto";
@@ -147,13 +145,11 @@ export class UsersController {
     });
   }
 
-  // @ApiTags("액세스 토큰 갱신")
-  // @UseGuards(JwtAuthGuard)
-  // @Patch("token")
-  // async updateAccessToken(@SignInUser() user: UserEntity, @Body() body: UpdateAccessTokenRequestDto) {
-  //   const { refreshToken } = body;
-  //   const { id } = user;
-
-  //   const
-  // }
+  @ApiTags("액세스 토큰 갱신")
+  @UseGuards(JwtAuthGuard)
+  @Patch("token")
+  async updateAccessToken(@SignInUser() user: UserEntity, @Body() body: UpdateAccessTokenRequestDto) {
+    const { refreshToken } = body;
+    const { id } = user;
+  }
 }
