@@ -8,7 +8,8 @@ import { UsersModule } from "./modules/users/users.module";
 import { TravelNotesModule } from "src/modules/travel-notes/travel-notes.module";
 import { CountriesModule } from "src/modules/conuntries/countries.module";
 import { CitiesModule } from "src/modules/cities/cities.module";
-import { MagnetsModule } from './modules/magnets/magnets.module';
+import { MagnetsModule } from "./modules/magnets/magnets.module";
+import { TermsModule } from "./modules/terms/terms.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MagnetsModule } from './modules/magnets/magnets.module';
       { path: "/api/countries", module: CountriesModule },
       { path: "/api/cities", module: CitiesModule },
       { path: "/api/magnets", module: MagnetsModule },
+      { path: "/terms", module: TermsModule },
     ]),
   ],
   controllers: [AppController],
