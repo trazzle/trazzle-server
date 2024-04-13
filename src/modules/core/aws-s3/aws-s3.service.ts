@@ -3,6 +3,7 @@ import { CustomConfigService } from "../config/custom-config.service";
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { deleteObjectCommandDto, getObjectCommandDto, putObjectCommandDto } from "./dtos/s3-command.dto";
 import ENV_KEY from "../config/constants/env-config.constant";
+import { Readable } from "stream";
 
 @Injectable()
 export class AwsS3Service {
@@ -54,14 +55,19 @@ export class AwsS3Service {
     };
   }
 
-  async getImageUrlFromS3Bucket(dto: getObjectCommandDto) {
+  async getFileFromS3Bucket(dto: getObjectCommandDto) {
     const getObjectCommand = new GetObjectCommand({
       Bucket: this.AWS_S3_BUCKET_NAME,
-      ...dto,
+      Key: `${this.NODE_MODE}/${dto.Key}`,
     });
 
-    await this.s3Client.send(getObjectCommand);
-    return this.publishS3URL(dto.Key);
+    const readable = (await this.s3Client.send(getObjectCommand)).Body as Readable;
+    const chunks: Buffer[] = [];
+    for await (const chunk of readable) {
+      chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks);
   }
 
   async deleteImageFromS3Bucket(dto: deleteObjectCommandDto) {

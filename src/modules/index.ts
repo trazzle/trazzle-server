@@ -4,5 +4,14 @@ import { UsersModule } from "./users/users.module";
 import { TravelNotesModule } from "src/modules/travel-notes/travel-notes.module";
 import { CitiesModule } from "src/modules/cities/cities.module";
 import { MagnetsModule } from "src/modules/magnets/magnets.module";
+import { TermsModule } from "./terms/terms.module";
 
-export const MainModules = [CoreModule, UsersModule, TravelNotesModule, CountriesModule, CitiesModule, MagnetsModule];
+export const MainModules = [
+  CoreModule,
+  UsersModule,
+  TravelNotesModule,
+  CountriesModule,
+  CitiesModule,
+  MagnetsModule,
+  TermsModule,
+];
