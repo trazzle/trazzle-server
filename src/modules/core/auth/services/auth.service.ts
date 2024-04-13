@@ -26,6 +26,9 @@ export class AuthService {
       // access 토큰을 찾아서 삭제한다.
       const key = `user-${userId}`;
       await this.redisService.del(key);
+
+      // 리프래시토큰 삭제
+      await this.redisService.del(`user-${userId}-refresh`);
     } catch (e) {
       throw e;
     }
