@@ -26,6 +26,8 @@ import {
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { SocialLoginResponseDto } from "../dtos/res/social-login-response.dto";
 import { AuthHelper } from "src/modules/core/auth/helpers/auth.helper";
+import { UpdateAccessTokenRequestDto } from "../dtos/req/update-access-token-request.dto";
+import { UpdateAccessTokenResponseDto } from "../dtos/res/update-access-token-response.dto";
 
 @ApiTags("사용자 & 로그인")
 @Controller()
@@ -146,10 +148,20 @@ export class UsersController {
   }
 
   @ApiTags("액세스 토큰 갱신")
+  @ApiOkResponse({ description: "액세스토큰 갱신 정상응답값", type: UpdateAccessTokenResponseDto })
   @UseGuards(JwtAuthGuard)
   @Patch("token")
   async updateAccessToken(@SignInUser() user: UserEntity, @Body() body: UpdateAccessTokenRequestDto) {
     const { refreshToken } = body;
-    const { id } = user;
+    const { id, account } = user;
+
+    // 리프래시토큰을 활용하여 액세스토큰을 갱신한다.
+    const updatedNewAccessToken = await this.authService.updateAccessToken({
+      refreshToken: refreshToken,
+      userId: id,
+      account: account,
+    });
+
+    return updatedNewAccessToken;
   }
 }

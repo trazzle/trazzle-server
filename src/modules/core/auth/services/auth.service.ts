@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import TrazzleJwtPayload from "src/modules/core/auth/jwt/trazzle-jwt.payload";
 import ENV_KEY from "src/modules/core/config/constants/env-config.constant";
 import { CustomConfigService } from "src/modules/core/config/custom-config.service";
 import { RedisService } from "src/modules/core/redis/redis.service";
 import { PrismaService } from "../../database/prisma/prisma.service";
+import { UpdateAccessTokenServiceRequestDto } from "src/modules/users/dtos/req/update-access-token-request.dto";
+import { UpdateAccessTokenResponseDto } from "src/modules/users/dtos/res/update-access-token-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -58,6 +60,29 @@ export class AuthService {
       await this.redisService.set(`user-${userId}`, accessToken, this.JWT_ACCESS_TOKEN_EXPIRATION_TTL);
 
       return accessToken;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async updateAccessToken(dto: UpdateAccessTokenServiceRequestDto): Promise<UpdateAccessTokenResponseDto> {
+    const { refreshToken, userId, account } = dto;
+    try {
+      // refreshToken이 레디스에 유효한지 확인
+      const refreshTokenFromRedis = await this.redisService.get(`user-${userId}-refresh`);
+      if (refreshTokenFromRedis !== refreshToken) {
+        throw new UnauthorizedException("리프래시토큰이 만료하였습니다.");
+      }
+
+      // 액세스토큰 갱신
+      const newAccessToken = await this.createAccessToken({
+        userId: userId,
+        account: account,
+      });
+
+      return {
+        access_token: newAccessToken,
+      };
     } catch (e) {
       throw e;
     }
