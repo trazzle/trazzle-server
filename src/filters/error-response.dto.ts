@@ -4,4 +4,5 @@ export interface ErrorResponseDto {
   statusCode: number;
   error: string;
   message: string[];
+  details: string;
 }

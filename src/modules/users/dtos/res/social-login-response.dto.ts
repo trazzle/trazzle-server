@@ -15,6 +15,13 @@ export class SocialLoginResponseDto {
   access_token: string;
 
   @ApiProperty({
+    description: "Trazzle 서비스 유저 리프래시 토큰 (1y)",
+    example:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImFjY291bnQiOiJrLWNobGRtc3JrZCIsImlhdCI6MTcxMTc5MTU2MCwiZXhwIjoxNzExODc3OTYwfQ.qNeh3LJTjMsNitv8wU76EdqjRzScyQdZfWodm1SPcSM",
+  })
+  refresh_token: string;
+
+  @ApiProperty({
     description: "유저이름",
     example: "서동성",
   })

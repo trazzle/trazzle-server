@@ -46,6 +46,6 @@ import { RedisModule } from "src/modules/core/redis/redis.module";
       }),
     },
   ],
-  exports: [AuthService],
+  exports: [AuthService, AuthHelper],
 })
 export class AuthModule {}

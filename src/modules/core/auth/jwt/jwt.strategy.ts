@@ -7,6 +7,7 @@ import { CustomConfigService } from "src/modules/core/config/custom-config.servi
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { RedisService } from "src/modules/core/redis/redis.service";
 import JwtPayload from "./trazzle-jwt.payload";
+import { AccessTokenExpiredException } from "src/errors/access-token-expired.error";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -29,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const tokenFromRedis = await this.redisService.get(`user-${userId}`);
 
       if (!tokenFromRedis) {
-        throw new UnauthorizedException("토큰이 만료하였습니다.");
+        throw new UnauthorizedException("액세스 토큰이 만료하였습니다.");
       }
 
       const user: User | null = await this.prismaService.user.findFirst({
@@ -44,6 +45,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       return user;
     } catch (e) {
+      if (e instanceof UnauthorizedException) {
+        throw new AccessTokenExpiredException();
+      }
       throw e;
     }
   }

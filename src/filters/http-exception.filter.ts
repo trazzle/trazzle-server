@@ -21,6 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         error: exceptionResponse,
         statusCode: statusCode,
         message: [exceptionResponse],
+        details: exception.message,
       };
 
       this.logger.error(exceptionResponse, exception.stack);
@@ -31,6 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         error: exceptionResponse["error"],
         statusCode: exceptionResponse["statusCode"],
         message: exceptionResponse["message"],
+        details: exception.message,
       };
 
       this.logger.error(exceptionResponse["message"], exception.stack);

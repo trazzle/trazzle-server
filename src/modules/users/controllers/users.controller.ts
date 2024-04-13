@@ -16,24 +16,25 @@ import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { UserEntity } from "../entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { AuthService } from "src/modules/core/auth/services/auth.service";
-import { CustomConfigService } from "src/modules/core/config/custom-config.service";
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   SignInOrSignUpAppleRequestBodyDto,
   SignInOrSignUpGoogleRequestBodyDto,
   SignInOrSignUpKakaoRequestBodyDto,
-  SignInOrSignUpRequestBodyDto,
 } from "../dtos/req/sign-in-sign-up-request-body.dto";
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { SocialLoginResponseDto } from "../dtos/res/social-login-response.dto";
+import { AuthHelper } from "src/modules/core/auth/helpers/auth.helper";
+import { UpdateAccessTokenRequestDto } from "../dtos/req/update-access-token-request.dto";
+import { UpdateAccessTokenResponseDto } from "../dtos/res/update-access-token-response.dto";
 
 @ApiTags("사용자 & 로그인")
 @Controller()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly customConfigService: CustomConfigService,
+    private readonly authHelperService: AuthHelper,
     private readonly authService: AuthService,
   ) {}
 
@@ -63,6 +64,7 @@ export class UsersController {
   }
 
   // 로그아웃
+  @ApiOperation({ summary: "로그아웃" })
   @BearerAuth(JwtAuthGuard)
   @ApiOkResponse({ description: "액세스 토큰 삭제" })
   @UseGuards(JwtAuthGuard)
@@ -81,7 +83,7 @@ export class UsersController {
   })
   @Post("sign-in/kakao")
   async signInKakao(@Body() body: SignInOrSignUpKakaoRequestBodyDto) {
-    const loginUserInfo = await this.authService.signInKakao(body);
+    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
     return loginUserInfo;
   }
 
@@ -94,7 +96,7 @@ export class UsersController {
   })
   @Post("sign-in/apple")
   async signInApple(@Body() body: SignInOrSignUpAppleRequestBodyDto) {
-    const loginUserInfo = await this.authService.signInApple(body);
+    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
     return loginUserInfo;
   }
 
@@ -107,7 +109,7 @@ export class UsersController {
   })
   @Post("sign-in/google")
   async signInGoogle(@Body() body: SignInOrSignUpGoogleRequestBodyDto) {
-    const loginUserInfo = await this.authService.signInGoogle(body);
+    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
     return loginUserInfo;
   }
 
@@ -144,5 +146,21 @@ export class UsersController {
       intro: intro,
       profileImageFile: file,
     });
+  }
+
+  @ApiTags("액세스 토큰 갱신")
+  @ApiOkResponse({ description: "액세스토큰 갱신 정상응답값", type: UpdateAccessTokenResponseDto })
+  @Patch("token")
+  async updateAccessToken(@Body() body: UpdateAccessTokenRequestDto) {
+    const { refreshToken, userId, account } = body;
+
+    // 리프래시토큰을 활용하여 액세스토큰을 갱신한다.
+    const updatedNewAccessToken = await this.authService.updateAccessToken({
+      refreshToken: refreshToken,
+      userId: userId,
+      account: account,
+    });
+
+    return updatedNewAccessToken;
   }
 }
