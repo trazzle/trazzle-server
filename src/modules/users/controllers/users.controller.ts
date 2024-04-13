@@ -64,6 +64,7 @@ export class UsersController {
   }
 
   // 로그아웃
+  @ApiOperation({ summary: "로그아웃" })
   @BearerAuth(JwtAuthGuard)
   @ApiOkResponse({ description: "액세스 토큰 삭제" })
   @UseGuards(JwtAuthGuard)
@@ -149,16 +150,14 @@ export class UsersController {
 
   @ApiTags("액세스 토큰 갱신")
   @ApiOkResponse({ description: "액세스토큰 갱신 정상응답값", type: UpdateAccessTokenResponseDto })
-  @UseGuards(JwtAuthGuard)
   @Patch("token")
-  async updateAccessToken(@SignInUser() user: UserEntity, @Body() body: UpdateAccessTokenRequestDto) {
-    const { refreshToken } = body;
-    const { id, account } = user;
+  async updateAccessToken(@Body() body: UpdateAccessTokenRequestDto) {
+    const { refreshToken, userId, account } = body;
 
     // 리프래시토큰을 활용하여 액세스토큰을 갱신한다.
     const updatedNewAccessToken = await this.authService.updateAccessToken({
       refreshToken: refreshToken,
-      userId: id,
+      userId: userId,
       account: account,
     });
 

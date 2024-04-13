@@ -5,7 +5,7 @@ import ENV_KEY from "src/modules/core/config/constants/env-config.constant";
 import { CustomConfigService } from "src/modules/core/config/custom-config.service";
 import { RedisService } from "src/modules/core/redis/redis.service";
 import { PrismaService } from "../../database/prisma/prisma.service";
-import { UpdateAccessTokenServiceRequestDto } from "src/modules/users/dtos/req/update-access-token-request.dto";
+import { UpdateAccessTokenRequestDto } from "src/modules/users/dtos/req/update-access-token-request.dto";
 import { UpdateAccessTokenResponseDto } from "src/modules/users/dtos/res/update-access-token-response.dto";
 
 @Injectable()
@@ -65,7 +65,7 @@ export class AuthService {
     }
   }
 
-  async updateAccessToken(dto: UpdateAccessTokenServiceRequestDto): Promise<UpdateAccessTokenResponseDto> {
+  async updateAccessToken(dto: UpdateAccessTokenRequestDto): Promise<UpdateAccessTokenResponseDto> {
     const { refreshToken, userId, account } = dto;
     try {
       // refreshToken이 레디스에 유효한지 확인

@@ -31,11 +31,6 @@ async function bootstrap() {
     // 운영버젼
   }
 
-  // Pipes
-
-  // Interceptors
-  // Filters
-
   // helmet
   app.use(helmet());
 
