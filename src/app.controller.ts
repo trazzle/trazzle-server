@@ -3,7 +3,7 @@ import { AppService } from "./app.service";
 import { RedisService } from "src/modules/core/redis/redis.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { writeFileSync } from "fs";
-import { ApiExcludeController, ApiExcludeEndpoint } from "@nestjs/swagger";
+import { ApiExcludeController } from "@nestjs/swagger";
 
 @ApiExcludeController()
 @Controller()
