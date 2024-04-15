@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "../dtos/req/create-user.dto";
 import { UpdateUserDto } from "../dtos/req/update-user.dto";
-import { UpdateUserRequestBodyDto } from "../dtos/req/update-user-request-body.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 
