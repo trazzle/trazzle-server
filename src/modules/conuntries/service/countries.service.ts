@@ -1,4 +1,4 @@
-import { Inject, Injectable, Query } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateCountryDto } from "src/modules/conuntries/dtos/create-country.dto";
 import { UpdateCountryDto } from "src/modules/conuntries/dtos/update-country.dto";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
