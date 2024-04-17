@@ -71,6 +71,17 @@ export class AuthService {
   async updateAccessToken(dto: UpdateAccessTokenRequestDto): Promise<UpdateAccessTokenResponseDto> {
     const { refreshToken, userId, account } = dto;
     try {
+      // userId와 account에 해당하는 유저가 있는지 확인
+      const user = await this.prismaService.user.findFirst({
+        where: {
+          id: userId,
+          account: account,
+        },
+      });
+      if (!user) {
+        throw new NotFoundException("존재하지 않은 유저입니다.");
+      }
+
       // refreshToken이 레디스에 유효한지 확인
       const refreshTokenFromRedis = await this.redisService.get(`user-${userId}-refresh`);
       if (refreshTokenFromRedis !== refreshToken) {
