@@ -218,35 +218,4 @@ export class TravelNotesService {
       where: { id: id },
     });
   }
-
-  async getUserTravelStatistics(userId: number) {
-    // travel: travel-notes 개수
-    const travel = await this.prismaService.travelNote.count({
-      where: {
-        userId: userId,
-      },
-    });
-
-    // error
-    const worldOfAllCountries = await this.prismaService.country.count();
-
-    // countries: 여행한 국가개수
-    const data = await this.prismaService.travelNote.findMany({
-      select: {
-        id: true,
-        city: {
-          select: {
-            countryCode: true,
-          },
-        },
-      },
-      where: {
-        userId: userId,
-      },
-    });
-    console.log(data);
-
-    // world: 전세계 백분율
-    // const world = (countries / worldOfAllCountries) * 100;
-  }
 }
