@@ -50,7 +50,7 @@ export class UserStatisticsService {
       return {
         travel: countOfTravelNotes,
         countries: countOfCountries,
-        world: `${percentageOfWorld}%`,
+        world: percentageOfWorld,
       };
     });
   }

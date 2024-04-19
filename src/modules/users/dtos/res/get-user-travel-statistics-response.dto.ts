@@ -14,8 +14,8 @@ export class GetUserTravelStatisticResponseDto {
   countries: number;
 
   @ApiProperty({
-    description: "세계여행 백분율",
-    example: "0.84%",
+    description: "세계여행 백분율(소수점아래 2자리만 표기)",
+    example: "0.84",
   })
   world: string;
 }
