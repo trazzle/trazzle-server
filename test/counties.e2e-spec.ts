@@ -87,7 +87,7 @@ describe("국가", () => {
           name: "대한민국",
           continent: "Asia",
         });
-        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.status).toBe(HttpStatus.CREATED);
         response = await 국가_생성(app, accessToken, {
           code: "KR",
           name: "대한민국",
