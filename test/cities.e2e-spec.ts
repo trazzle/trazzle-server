@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "src/app.module";
@@ -48,13 +48,36 @@ describe("도시", () => {
     it(
       "도시가 정상적으로 생성 된다.",
       async () => {
-        const body = {
+        const response = await 도시_생성(app, accessToken, {
           name: "대한민국",
           countryCode: "KR",
-        };
-        const response = await 도시_생성(app, accessToken, body);
-        expect(response.status).toBe(201);
+        });
+        expect(response.status).toBe(HttpStatus.CREATED);
         expect(response.body).toBeDefined();
+      },
+      1000 * 1000,
+    );
+
+    it(
+      "도시명을 입력하지 않으면 응답 코드 400을 반환 한다.",
+      async () => {
+        const response = await 도시_생성(app, accessToken, {
+          name: null,
+          countryCode: "KR",
+        });
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      },
+      1000 * 1000,
+    );
+
+    it(
+      "국가 코드를 입력하지 않으면 응답 코드 400을 반환 한다.",
+      async () => {
+        const response = await 도시_생성(app, accessToken, {
+          name: "대한민국",
+          countryCode: null,
+        });
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       },
       1000 * 1000,
     );
