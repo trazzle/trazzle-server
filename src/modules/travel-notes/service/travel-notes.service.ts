@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTravelNoteDto } from "../dtos/req/create-travel-note.dto";
 import { UpdateTravelNoteDto } from "src/modules/travel-notes/dtos/req/update-travel-note.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
@@ -39,7 +39,7 @@ export class TravelNotesService {
   ) {}
 
   async create(userId: number, dto: CreateTravelNoteDto, images: { sequence: number; file: Express.Multer.File }[]) {
-    dto.validate();
+    this.validate(dto);
 
     return this.prismaService.$transaction(async transaction => {
       const travelNote = await transaction.travelNote.create({
@@ -63,7 +63,6 @@ export class TravelNotesService {
 
           const request: putObjectCommandDto = {
             Key: `travel-notes/${travelNote.id}/${uuidv4()}`,
-            // @ts-ignore
             Body: image.file.buffer,
             ContentType: image.file.mimetype,
           };
@@ -122,7 +121,7 @@ export class TravelNotesService {
     dto: UpdateTravelNoteDto,
     images: { sequence: number; file: Express.Multer.File }[],
   ) {
-    dto.validate();
+    this.validate(dto);
 
     return this.prismaService.$transaction(async transaction => {
       const travelNote = await transaction.travelNote.findUnique({
@@ -217,5 +216,23 @@ export class TravelNotesService {
     return this.prismaService.travelNote.findFirst({
       where: { id: id },
     });
+  }
+
+  private validate(request: CreateTravelNoteDto | UpdateTravelNoteDto) {
+    if (request.startDate.isAfter(request.endDate)) {
+      throw new BadRequestException("여행 시작일은 여행 종료일보다 빨라야 합니다.");
+    }
+    if (!request.cityId && !request.cityName) {
+      throw new BadRequestException("도시ID[cityId] 또는 도시 이름[cityName]이 필요 합니다.");
+    }
+    if (request.cityId && request.cityName) {
+      throw new BadRequestException("도시ID[cityId]와 도시 이름[cityName] 중 하나만 입력해야 합니다.");
+    }
+    if (request.mainImageIndex && (request.mainImageIndex < 1 || request.mainImageIndex > 6)) {
+      throw new BadRequestException("메인 이미지 인덱스는 1~6 사이만 가능합니다.");
+    }
+    if (request.review && request.review.length > 280) {
+      throw new BadRequestException("감상문은 280자까지 입력 가능합니다.");
+    }
   }
 }

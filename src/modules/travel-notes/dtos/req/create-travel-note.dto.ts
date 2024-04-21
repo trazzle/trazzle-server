@@ -1,8 +1,7 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsNotEmpty, IsOptional, MaxLength } from "class-validator";
 import { Transform } from "class-transformer";
 import { LocalDate } from "@js-joda/core";
 import { isNumberOrElseThrow, isOptionalOrNumberOrElseThrow, toLocalDate } from "src/util/transform";
-import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTravelNoteDto {
@@ -30,6 +29,9 @@ export class CreateTravelNoteDto {
     required: true,
   })
   @IsNotEmpty({ message: "제목[title]은 문자열이어야 합니다." })
+  @MaxLength(20, {
+    message: "제목[title]은 최대 20글자까지 가능합니다.",
+  })
   title: string;
 
   @ApiProperty({
@@ -37,8 +39,11 @@ export class CreateTravelNoteDto {
     example: "여행기 내용",
     required: false,
   })
-  @IsNotEmpty({ message: "여행기[review]는 문자열이어야 합니다." })
+  //@IsNotEmpty({ message: "여행기[review]는 문자열이어야 합니다." })
   @IsOptional()
+  @MaxLength(280, {
+    message: "여행기[review]는 최대 280글자까지 가능합니다.",
+  })
   review: string;
 
   // @IsNumber({}, { message: '도시ID[cityId]는 숫자여야 합니다.' })
@@ -66,19 +71,4 @@ export class CreateTravelNoteDto {
   })
   @Transform(isNumberOrElseThrow("메인 이미지 인덱스[mainImageIndex]는 숫자여야 합니다."))
   mainImageIndex: number;
-
-  validate() {
-    if (this.startDate.isAfter(this.endDate)) {
-      throw new BadRequestException("여행 시작일은 여행 종료일보다 빨라야 합니다.");
-    }
-    if (!this.cityId && !this.cityName) {
-      throw new BadRequestException("도시ID[cityId] 또는 도시 이름[cityName]이 필요 합니다.");
-    }
-    if (this.cityId && this.cityName) {
-      throw new BadRequestException("도시ID[cityId]와 도시 이름[cityName] 중 하나만 입력해야 합니다.");
-    }
-    if (this.mainImageIndex && (this.mainImageIndex < 1 || this.mainImageIndex > 6)) {
-      throw new ForbiddenException("메인 이미지 인덱스는 1~6 사이만 가능합니다.");
-    }
-  }
 }

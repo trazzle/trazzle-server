@@ -18,19 +18,19 @@ import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { UserEntity } from "src/modules/users/entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import { ApiBody, ApiOkResponse, ApiConsumes, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { TravelNoteEntity } from "../entities/travel-note.entity";
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 
 @BearerAuth()
-@ApiTags("여행일지")
+@ApiTags("여행기")
 @UseGuards(JwtAuthGuard)
 @Controller()
 export class TravelNotesController {
   constructor(private readonly travelNotesService: TravelNotesService) {}
 
   @ApiConsumes("multipart/form-data")
-  @ApiOperation({ summary: "여행일지 생성" })
+  @ApiOperation({ summary: "여행기 생성" })
   @ApiOkResponse({ description: "신규 여행기록", type: TravelNoteEntity })
   @ApiBody({
     schema: {
@@ -39,32 +39,32 @@ export class TravelNotesController {
         image1: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지1",
+          description: "여행기 이미지1",
         },
         image2: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지2",
+          description: "여행기 이미지2",
         },
         image3: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지3",
+          description: "여행기 이미지3",
         },
         image4: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지4",
+          description: "여행기 이미지4",
         },
         image5: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지5",
+          description: "여행기 이미지5",
         },
         image6: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지6",
+          description: "여행기 이미지6",
         },
         startDate: {
           type: "string",
@@ -79,12 +79,12 @@ export class TravelNotesController {
         title: {
           type: "string",
           example: "서울여행",
-          description: "여행일지 제목",
+          description: "여행기 제목",
         },
         review: {
           type: "string",
           example: "서울여행 재밌다.",
-          description: "여행일지 내용",
+          description: "여행기 내용",
         },
         cityId: { type: "number", example: "1", description: "도시 ID" },
         cityName: {
@@ -141,8 +141,8 @@ export class TravelNotesController {
   }
 
   @ApiOperation({
-    summary: "여행일지 목록 조회",
-    description: "로그인한 사용자의 여행 일지를 반환",
+    summary: "여행기 목록 조회",
+    description: "로그인한 사용자의 여행기를 반환",
   })
   @ApiOkResponse({ type: TravelNoteEntity, isArray: true })
   @Get()
@@ -150,12 +150,12 @@ export class TravelNotesController {
     return await this.travelNotesService.list(user.id);
   }
 
-  @ApiOperation({ summary: "여행일지 단건 조회" })
+  @ApiOperation({ summary: "여행기 단건 조회" })
   @ApiParam({
     name: "id",
     required: true,
     type: "number",
-    description: "여행일지 고유번호 PK",
+    description: "여행기 고유번호 PK",
     example: 1,
   })
   @ApiOkResponse({
@@ -167,12 +167,12 @@ export class TravelNotesController {
     return await this.travelNotesService.getOne(id);
   }
 
-  @ApiOperation({ summary: "여행일지 수정" })
+  @ApiOperation({ summary: "여행기 수정" })
   @ApiConsumes("multipart/form-data")
   @ApiParam({
     name: "id",
     required: true,
-    description: "여행일지ID",
+    description: "여행기ID",
     type: String,
   })
   @ApiBody({
@@ -182,32 +182,32 @@ export class TravelNotesController {
         image1: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지1",
+          description: "여행기 이미지1",
         },
         image2: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지2",
+          description: "여행기 이미지2",
         },
         image3: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지3",
+          description: "여행기 이미지3",
         },
         image4: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지4",
+          description: "여행기 이미지4",
         },
         image5: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지5",
+          description: "여행기 이미지5",
         },
         image6: {
           type: "file",
           format: "binary",
-          description: "여행일지 이미지6",
+          description: "여행기 이미지6",
         },
         startDate: {
           type: "string",
@@ -222,12 +222,12 @@ export class TravelNotesController {
         title: {
           type: "string",
           example: "서울여행",
-          description: "여행일지 제목",
+          description: "여행기 제목",
         },
         review: {
           type: "string",
           example: "서울여행 재밌다.",
-          description: "여행일지 내용",
+          description: "여행기 내용",
         },
         cityId: { type: "number", example: "1", description: "도시 ID" },
         cityName: {
@@ -284,12 +284,12 @@ export class TravelNotesController {
   }
 
   @ApiConsumes("application/json")
-  @ApiOperation({ summary: "여행일지 삭제" })
+  @ApiOperation({ summary: "여행기 삭제" })
   @ApiParam({
     name: "id",
     required: true,
     type: "number",
-    description: "여행일지 고유번호 PK",
+    description: "여행기 고유번호 PK",
     example: 1,
   })
   @Delete(":id")
