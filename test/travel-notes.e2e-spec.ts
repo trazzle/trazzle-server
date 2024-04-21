@@ -43,39 +43,82 @@ describe("여행기", () => {
   });
 
   describe("여행기 등록", () => {
-    describe("정상 케이스", () => {
-      it("존재하는 도시에 대해 여행일지를 등록 한다.", async () => {
-        const response = await 여행일지_생성(
-          app,
-          accessToken,
-          {
-            startDate: LocalDate.of(2024, 3, 20),
-            endDate: LocalDate.of(2024, 3, 25),
-            title: "서울여행",
-            review: "서울여행 재밌다.",
-            cityId: cityId,
-            cityName: null,
-            mainImageIndex: 1,
-          },
-          ["dog.jpg", "dog.jpg", "dog.jpg", "dog.jpg", "dog.jpg", "dog.jpg"],
-        );
-
-        expect(response.status).toBe(HttpStatus.CREATED);
-      });
-
-      it("존재 하지 않는 도시(기타) 대해 여행일지를 등록 한다.", async () => {
-        const response = await 여행일지_생성(app, accessToken, {
+    it("존재하는 도시에 대해 여행일지를 등록 한다.", async () => {
+      const response = await 여행일지_생성(
+        app,
+        accessToken,
+        {
           startDate: LocalDate.of(2024, 3, 20),
           endDate: LocalDate.of(2024, 3, 25),
           title: "서울여행",
           review: "서울여행 재밌다.",
-          cityId: null,
-          cityName: "한양",
+          cityId: cityId,
+          cityName: null,
           mainImageIndex: 1,
-        });
+        },
+        ["dog.jpg", "dog.jpg", "dog.jpg", "dog.jpg", "dog.jpg", "dog.jpg"],
+      );
 
-        expect(response.status).toBe(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
+    });
+
+    it("존재 하지 않는 도시(기타) 대해 여행일지를 등록 한다.", async () => {
+      const response = await 여행일지_생성(app, accessToken, {
+        startDate: LocalDate.of(2024, 3, 20),
+        endDate: LocalDate.of(2024, 3, 25),
+        title: "서울여행",
+        review: "서울여행 재밌다.",
+        cityId: null,
+        cityName: "한양",
+        mainImageIndex: 1,
       });
+
+      expect(response.status).toBe(HttpStatus.CREATED);
+    });
+
+    it("99개의 여행기가 존재할 때 등록 요청하면 응답 코드 200를 반환 한다.", async () => {
+      const body = {
+        startDate: LocalDate.of(2024, 3, 20),
+        endDate: LocalDate.of(2024, 3, 25),
+        title: "서울여행",
+        review: "서울여행 재밌다.",
+        cityId: cityId,
+        cityName: null,
+        mainImageIndex: 1,
+      };
+
+      await Promise.all(
+        Array(99)
+          .fill(true)
+          .map(async () => {
+            const response = await 여행일지_생성(app, accessToken, body);
+            expect(response.status).toBe(HttpStatus.CREATED);
+          }),
+      );
+      const response = await 여행일지_생성(app, accessToken, body);
+      expect(response.status).toBe(HttpStatus.CREATED);
+    });
+
+    it("100개의 여행기가 존재할 때 등록 요청하면 응답 코드 409를 반환 한다.", async () => {
+      const body = {
+        startDate: LocalDate.of(2024, 3, 20),
+        endDate: LocalDate.of(2024, 3, 25),
+        title: "서울여행",
+        review: "서울여행 재밌다.",
+        cityId: cityId,
+        cityName: null,
+        mainImageIndex: 1,
+      };
+      await Promise.all(
+        Array(100)
+          .fill(true)
+          .map(async () => {
+            const response = await 여행일지_생성(app, accessToken, body);
+            expect(response.status).toBe(HttpStatus.CREATED);
+          }),
+      );
+      const response = await 여행일지_생성(app, accessToken, body);
+      expect(response.status).toBe(HttpStatus.CONFLICT);
     });
 
     describe("제목", () => {
