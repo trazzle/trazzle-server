@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTravelNoteDto } from "../dtos/req/create-travel-note.dto";
 import { UpdateTravelNoteDto } from "src/modules/travel-notes/dtos/req/update-travel-note.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
@@ -40,6 +40,11 @@ export class TravelNotesService {
 
   async create(userId: number, dto: CreateTravelNoteDto, images: { sequence: number; file: Express.Multer.File }[]) {
     this.validate(dto);
+
+    const count = await this.prismaService.travelNote.count({ where: { userId: userId } });
+    if (count >= 100) {
+      throw new ConflictException("최대 등록 가능한 여행기 수는 100개 입니다.");
+    }
 
     return this.prismaService.$transaction(async transaction => {
       const travelNote = await transaction.travelNote.create({
