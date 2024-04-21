@@ -1,10 +1,9 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
-import { AppModule } from "./../src/app.module";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { UserEntity } from "src/modules/users/entities/user.entity";
 import { 사용자_로그인, 사용자_삭제, 사용자_생성 } from "./fixture/user.fixture";
 import { v4 } from "uuid";
+import { initializeApp } from "./common.e2e-spec";
 
 describe("사용자 & 로그인", () => {
   let app: INestApplication;
@@ -12,12 +11,7 @@ describe("사용자 & 로그인", () => {
   let user: UserEntity;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    app = await initializeApp();
     prismaService = app.get<PrismaService>(PrismaService);
     user = await 사용자_생성(prismaService, v4());
   });

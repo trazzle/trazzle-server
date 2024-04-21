@@ -1,11 +1,10 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
-import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "src/app.module";
 import { 임의사용자_생성_로그인 } from "./fixture/user.fixture";
 import { 국가_생성 } from "./fixture/country.fixture";
 import { 도시_생성, 도시_초기화 } from "./fixture/city.fixture";
 import { 전체_테이블_초기화 } from "./fixture/common.fixture";
+import { initializeApp } from "./common.e2e-spec";
 
 /**
  * https://jojoldu.tistory.com/656
@@ -17,12 +16,7 @@ describe("도시", () => {
   let accessToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    app = await initializeApp();
     prismaService = app.get<PrismaService>(PrismaService);
     const result = await 임의사용자_생성_로그인(app, prismaService);
     accessToken = result.accessToken;
