@@ -14,3 +14,7 @@ export const 국가_생성 = async (app: INestApplication, accessToken: string, 
     .set("Authorization", `Bearer ${accessToken}`)
     .send(request);
 };
+
+export const 국가_조회 = async (app: INestApplication, accessToken: string) => {
+  return Supertest.agent(app.getHttpServer()).get("/api/countries").set("Authorization", `Bearer ${accessToken}`);
+};

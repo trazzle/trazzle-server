@@ -1,7 +1,7 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { 임의사용자_생성_로그인 } from "./fixture/user.fixture";
-import { 국가_생성, 국가_초기화 } from "./fixture/country.fixture";
+import { 국가_생성, 국가_조회, 국가_초기화 } from "./fixture/country.fixture";
 import { 전체_테이블_초기화 } from "./fixture/common.fixture";
 import { initializeApp } from "./common.e2e-spec";
 
@@ -88,6 +88,38 @@ describe("국가", () => {
           continent: "Asia",
         });
         expect(response.status).toBe(HttpStatus.CONFLICT);
+      },
+      1000 * 1000,
+    );
+  });
+
+  describe("국가 목록 조회", () => {
+    it(
+      "국가 생성 후, 국가 목록 조회하면 응답 코드 200과 함께 해당 국가가 포함된 리스트가 반환 된다.",
+      async () => {
+        await 국가_생성(app, accessToken, {
+          code: "KR",
+          name: "대한민국",
+          continent: "Asia",
+        });
+
+        const response = await 국가_조회(app, accessToken);
+
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: "KR",
+            }),
+          ]),
+        );
+        expect(response.body).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: "JP",
+            }),
+          ]),
+        );
       },
       1000 * 1000,
     );
