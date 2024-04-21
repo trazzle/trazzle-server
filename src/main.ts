@@ -21,15 +21,10 @@ async function bootstrap() {
   );
 
   const customConfigService = app.get<CustomConfigService>(CustomConfigService);
-  const isProduction = customConfigService.isProduction();
 
   // Prisma
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
-
-  if (isProduction) {
-    // 운영버젼
-  }
 
   // helmet
   app.use(helmet());
