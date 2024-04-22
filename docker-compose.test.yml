@@ -1,0 +1,30 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker compose reference guide at
+# https://docs.docker.com/compose/compose-file/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+version: '3.5'
+name: trazzle-e2e-test
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: trazzle-e2e-test-db
+    restart: always
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_HOST: localhost
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+  redis:
+    image: redis:latest
+    container_name: trazzle-e2e-test-cache
+    command: redis-server --port 6379
+    ports:
+      - ${REDIS_PORT}:6379

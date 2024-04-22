@@ -1,4 +1,4 @@
-import { Inject, Injectable, Query } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { CreateCountryDto } from "src/modules/conuntries/dtos/create-country.dto";
 import { UpdateCountryDto } from "src/modules/conuntries/dtos/update-country.dto";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
@@ -10,7 +10,15 @@ import { TAKE_20_PER_PAGE } from "src/commons/constants/pagination.constant";
 export class CountriesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(dto: CreateCountryDto): Promise<CountryEntity> {
+  async create(dto: CreateCountryDto): Promise<CountryEntity> {
+    const country = await this.prismaService.country.findUnique({
+      where: { code: dto.code },
+    });
+
+    if (country) {
+      throw new ConflictException("이미 존재하는 국가 코드 입니다.");
+    }
+
     return this.prismaService.country.create({
       data: {
         code: dto.code,

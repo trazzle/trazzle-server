@@ -33,7 +33,7 @@ model TravelNote {
   endDate   String // 여행 종료일
 
   title     String // 제목
-  review    String? // 여행기
+  review    String?  @db.VarChar(280) // 여행기
   createdAt DateTime @default(now()) // 생성일
   updatedAt DateTime @updatedAt // 수정일
 
