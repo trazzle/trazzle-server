@@ -5,6 +5,7 @@ import { TravelNotesModule } from "src/modules/travel-notes/travel-notes.module"
 import { CitiesModule } from "src/modules/cities/cities.module";
 import { MagnetsModule } from "src/modules/magnets/magnets.module";
 import { TermsModule } from "./terms/terms.module";
+import { BackOfficeModule } from "src/modules/back-office/back-office.module";
 
 export const MainModules = [
   CoreModule,
@@ -14,4 +15,5 @@ export const MainModules = [
   CitiesModule,
   MagnetsModule,
   TermsModule,
+  BackOfficeModule,
 ];
