@@ -1,6 +1,8 @@
-import { Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { BackOfficeAdminService } from "src/modules/back-office/services/back-office-admin.service";
+import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
+import { AdminGuard } from "src/guards/admin-auth.guard";
 
 @Controller("admins")
 @ApiTags("백오피스 API - 관리자")
@@ -9,10 +11,11 @@ export class BackOfficeAdminController {
 
   @ApiOperation({ summary: "신규 관리자 회원 생성" })
   @Post()
-  createAdmin() {
-    return "createAdmin";
+  createAdmin(@Body() body: CreateAdminRequestBodyDto) {
+    return this.backOfficeAdminService.createAdmin(body);
   }
 
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: "신규 관리자 회원 목록 조회" })
   @Get()
   getAdmins() {
