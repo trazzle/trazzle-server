@@ -33,4 +33,9 @@ export class UserEntity implements User {
     description: "유저 프로필 이미지",
   })
   profileImageURL: string | null;
+
+  @ApiProperty({
+    description: "관리자 계정",
+  })
+  isAdmin: boolean;
 }
