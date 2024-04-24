@@ -22,7 +22,7 @@ model User {
 
   intro           String?
   profileImageURL String?
-
+  isAdmin Boolean @default(false)
   TravelNote TravelNote[]
 }
 
