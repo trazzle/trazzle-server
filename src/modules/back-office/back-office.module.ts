@@ -4,9 +4,11 @@ import { PrismaModule } from "src/modules/core/database/prisma/prisma.module";
 import backOfficeControllers from "src/modules/back-office/controllers";
 import backOfficeServices from "src/modules/back-office/services";
 import { CustomConfigModule } from "src/modules/core/config/custom-config.module";
+import { JwtModule } from "@nestjs/jwt";
+import { RedisModule } from "../core/redis/redis.module";
 
 @Module({
-  imports: [CustomConfigModule, PrismaModule, AwsS3Module],
+  imports: [CustomConfigModule, PrismaModule, AwsS3Module, JwtModule, RedisModule],
   providers: [...backOfficeServices],
   controllers: [...backOfficeControllers],
 })
