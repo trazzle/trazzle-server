@@ -9,13 +9,13 @@ export class BackOfficeCountryController {
 
   @ApiOperation({ summary: "국가 생성" })
   @Post()
-  async createCountry() {
+  createCountry() {
     return "createCountry";
   }
 
   @ApiOperation({ summary: "국가 정보 수정" })
   @Patch()
-  async updateCountryInfo() {
+  updateCountryInfo() {
     return "updateCountryInfo";
   }
 }

@@ -9,19 +9,19 @@ export class BackOfficeMagnetController {
 
   @ApiOperation({ summary: "마그넷 생성" })
   @Post()
-  async createMagnet() {
+  createMagnet() {
     return "createMagnet";
   }
 
   @ApiOperation({ summary: "마그넷 정보 수정" })
   @Patch()
-  async updateMagnet() {
+  updateMagnet() {
     return "updateMagnet";
   }
 
   @ApiOperation({ summary: "마그넷 삭제" })
   @Delete()
-  async deleteMagnet() {
+  deleteMagnet() {
     return "deleteMagnet";
   }
 }

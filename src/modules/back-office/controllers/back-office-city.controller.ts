@@ -9,13 +9,13 @@ export class BackOfficeCityController {
 
   @ApiOperation({ summary: "도시 생성" })
   @Post()
-  async createCity() {
+  createCity() {
     return "createCity";
   }
 
   @ApiOperation({ summary: "도시 정보 수정" })
   @Patch()
-  async updateCityInfo() {
+  updateCityInfo() {
     return "updateCityInfo";
   }
 }
