@@ -13,28 +13,10 @@ import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 export class CountriesController {
   constructor(private readonly countriesService: CountriesService) {}
 
-  @ApiExcludeEndpoint()
-  @Post()
-  create(@Body() dto: CreateCountryDto) {
-    return this.countriesService.create(dto);
-  }
-
   @ApiOperation({ summary: "국가 검색" })
   @ApiOkResponse({ type: CountryEntity, isArray: true })
   @Get()
   findAll(@Query() dto: SearchCountryDto) {
     return this.countriesService.findAll(dto);
-  }
-
-  @ApiExcludeEndpoint()
-  @Put(":code")
-  update(@Param("code") code: string, @Body() dto: UpdateCountryDto) {
-    return this.countriesService.update(code, dto);
-  }
-
-  @ApiExcludeEndpoint()
-  @Delete(":code")
-  delete(@Param("code") code: string) {
-    return this.countriesService.delete(code);
   }
 }
