@@ -43,9 +43,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new NotFoundException("존재하지 않은 유저입니다.");
       }
 
+      // requestor가 관리자 유저라면 통과를 못함.
+      if (user.isAdmin === true) {
+        throw new UnauthorizedException("접근할 수 없습니다.");
+      }
+
       return user;
     } catch (e) {
-      if (e instanceof UnauthorizedException) {
+      if (e instanceof UnauthorizedException && e.message === "액세스 토큰이 만료하였습니다.") {
         throw new AccessTokenExpiredException();
       }
       throw e;
