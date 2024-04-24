@@ -3,9 +3,10 @@ import { AwsS3Module } from "src/modules/core/aws-s3/aws-s3.module";
 import { PrismaModule } from "src/modules/core/database/prisma/prisma.module";
 import backOfficeControllers from "src/modules/back-office/controllers";
 import backOfficeServices from "src/modules/back-office/services";
+import { CustomConfigModule } from "src/modules/core/config/custom-config.module";
 
 @Module({
-  imports: [PrismaModule, AwsS3Module],
+  imports: [CustomConfigModule, PrismaModule, AwsS3Module],
   providers: [...backOfficeServices],
   controllers: [...backOfficeControllers],
 })
