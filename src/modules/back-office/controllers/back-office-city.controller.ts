@@ -2,6 +2,7 @@ import { Body, Controller, Param, ParseIntPipe, Patch, Post } from "@nestjs/comm
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { BackOfficeCityService } from "src/modules/back-office/services/back-office-city.service";
 import { CreateCityDto } from "src/modules/cities/dto/create-city.dto";
+import { UpdateCityDto } from "src/modules/cities/dto/update-city.dto";
 
 @Controller("cities")
 @ApiTags("백오피스 API - 도시")
