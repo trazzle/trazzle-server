@@ -1,9 +1,10 @@
 import { Controller, Get, ParseIntPipe, Query, UseGuards } from "@nestjs/common";
 import { MagnetsService } from "../service/magnets.service";
-import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
+import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 
-@ApiBearerAuth()
+@BearerAuth(JwtAuthGuard)
 @ApiTags("마그넷")
 @UseGuards(JwtAuthGuard)
 @Controller()
