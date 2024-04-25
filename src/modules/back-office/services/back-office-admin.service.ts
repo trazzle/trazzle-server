@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
-import { CreateAdminResponseDto } from "../dtos/res/create-admin-response.dto";
 
 @Injectable()
 export class BackOfficeAdminService {
@@ -15,7 +14,7 @@ export class BackOfficeAdminService {
         data: {
           name: name,
           account: `admin-${account}`,
-          isAdmin: true,
+          role: "ADMIN",
         },
       });
 
