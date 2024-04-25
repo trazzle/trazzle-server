@@ -2,7 +2,7 @@ import { OmitType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
 import { UserEntity } from "src/modules/users/entities/user.entity";
 
-export class CreateAdminResponseDto extends OmitType(UserEntity, ["intro", "profileImageURL", "isAdmin"] as const) {
+export class CreateAdminResponseDto extends OmitType(UserEntity, ["intro", "profileImageURL", "role"] as const) {
   @ApiProperty({
     description: "유저 PK",
     example: 1,
