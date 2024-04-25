@@ -40,7 +40,7 @@ export class AdminGuard implements CanActivate {
         throw new NotFoundException("존재하지 않은 회원입니다.");
       }
 
-      return user.isAdmin ?? false;
+      return user.role === "ADMIN";
     } catch (error) {
       throw error;
     }
