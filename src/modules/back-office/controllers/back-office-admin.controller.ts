@@ -22,18 +22,21 @@ export class BackOfficeAdminController {
     return "getAdmins";
   }
 
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: "신규 관리자 회원 단건 조회" })
   @Get(":id")
   getAdminInfo(@Param("id", ParseIntPipe) id: number) {
     return "getAdminInfo" + id;
   }
 
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: "관리자 회원 정보 수정" })
   @Patch()
   updateAdminInfo() {
     return "updateAdminInfo";
   }
 
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: "관리자 회원 탈퇴" })
   @Delete()
   deleteAdmin() {
