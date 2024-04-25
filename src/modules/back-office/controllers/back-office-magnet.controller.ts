@@ -1,7 +1,9 @@
-import { Controller, Delete, Patch, Post } from "@nestjs/common";
+import { Controller, Delete, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AdminGuard } from "src/guards/admin-auth.guard";
 import { BackOfficeMagnetService } from "src/modules/back-office/services/back-office-magnet.service";
 
+@UseGuards(AdminGuard)
 @Controller("magnets")
 @ApiTags("백오피스 API - 마그넷")
 export class BackOfficeMagnetController {
