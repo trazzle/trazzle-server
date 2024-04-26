@@ -21,7 +21,7 @@ export class AdminGuard implements CanActivate {
     try {
       const inputAdminBearerToken = this.extractTokenFromHeader(request);
       if (!inputAdminBearerToken) {
-        throw new UnauthorizedException("토큰이 만료되었습니다.");
+        throw new UnauthorizedException("액세스 토큰이 만료되었습니다.");
       }
 
       const payload = await this.jwtService.verifyAsync(inputAdminBearerToken, {
