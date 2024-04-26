@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, MaxLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 import { Transform } from "class-transformer";
 import { LocalDate } from "@js-joda/core";
 import { isNumberOrElseThrow, isOptionalOrNumberOrElseThrow, toLocalDate } from "src/util/transform";
@@ -61,6 +61,8 @@ export class CreateTravelNoteDto {
     example: "Seoul",
     required: false,
   })
+  @IsString()
+  @MaxLength(20)
   @IsOptional()
   cityName: string;
 
