@@ -11,7 +11,7 @@ export class UserEntity implements User {
 
   @ApiProperty({
     description: "유저이름",
-    example: "최은강",
+    example: "김트레즐",
   })
   name: string;
 
