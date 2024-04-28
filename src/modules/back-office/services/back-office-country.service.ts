@@ -8,21 +8,35 @@ import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 export class BackOfficeCountryService {
   constructor(private prismaService: PrismaService) {}
 
-  async create(dto: CreateCountryDto): Promise<CountryEntity> {
-    const country = await this.prismaService.country.findUnique({
-      where: { code: dto.code },
-    });
+  async create(dto: CreateCountryDto) {
+    const { code, name, continent } = dto;
+    this.prismaService.$transaction(async transaction => {
+      // 기존의 국가가 들어있는지 확인
+      const country = await transaction.country.findMany({
+        where: {
+          OR: [
+            {
+              code: { contains: code },
+            },
+            {
+              name: { contains: name },
+            },
+          ],
+        },
+      });
 
-    if (country) {
-      throw new ConflictException("이미 존재하는 국가 코드 입니다.");
-    }
+      if (country.length > 0) {
+        throw new ConflictException("이미 존재하는 국가 입니다.");
+      }
 
-    return this.prismaService.country.create({
-      data: {
-        code: dto.code,
-        name: dto.name,
-        continent: dto.continent,
-      },
+      // 신규 국가 등록
+      return await transaction.country.create({
+        data: {
+          code: code,
+          name: name,
+          continent: continent,
+        },
+      });
     });
   }
 
