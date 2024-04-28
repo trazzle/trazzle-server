@@ -44,7 +44,7 @@ model TravelNote {
 
   city     City?   @relation(fields: [cityId], references: [id])
   cityId   Int?
-  cityName String?
+  cityName String? @db.VarChar(20)
 
   images TravelImage[]
   User   User?         @relation(fields: [userId], references: [id])
