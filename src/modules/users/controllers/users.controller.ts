@@ -16,7 +16,7 @@ import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { UserEntity } from "../entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { AuthService } from "src/modules/core/auth/services/auth.service";
-import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   SignInOrSignUpAppleRequestBodyDto,
@@ -55,7 +55,7 @@ export class UsersController {
   @ApiOperation({
     summary: "회원탈퇴",
   })
-  @ApiOkResponse({ description: "탈퇴한 유저정보", type: UserEntity })
+  @ApiNoContentResponse({ description: "탈퇴 성공" })
   @UseGuards(JwtAuthGuard)
   @Delete()
   async withdrawUser(@SignInUser() user: UserEntity) {
