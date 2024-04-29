@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateTravelNoteDto } from "../dtos/req/create-travel-note.dto";
 import { UpdateTravelNoteDto } from "src/modules/travel-notes/dtos/req/update-travel-note.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
@@ -100,10 +106,10 @@ export class TravelNotesService {
     });
   }
 
-  delete(userId: number, id: number) {
+  delete(userId: number, travelNoteId: number) {
     return this.prismaService.$transaction(async transaction => {
       const travelNote = await transaction.travelNote.findUnique({
-        where: { id, userId },
+        where: { id: travelNoteId },
         include: { images: true },
       });
 
@@ -111,11 +117,15 @@ export class TravelNotesService {
         throw new NotFoundException("존재 하지 않는 여행 일지 입니다.");
       }
 
+      if (travelNote.userId !== userId) {
+        throw new ForbiddenException("권한이 없습니다.");
+      }
+
       // 이미지 삭제
       await Promise.all(travelNote.images.map(image => this.awsS3Service.deleteImageFromS3Bucket({ Key: image.key })));
 
       await transaction.travelNote.delete({
-        where: { id },
+        where: { id: travelNoteId },
       });
     });
   }
@@ -130,12 +140,16 @@ export class TravelNotesService {
 
     return this.prismaService.$transaction(async transaction => {
       const travelNote = await transaction.travelNote.findUnique({
-        where: { id: travelNoteId, userId },
+        where: { id: travelNoteId },
         include: { images: true },
       });
 
       if (!travelNote) {
         throw new NotFoundException("존재 하지 않는 여행 일지 입니다.");
+      }
+
+      if (travelNote.userId !== userId) {
+        throw new ForbiddenException("권한이 없습니다.");
       }
 
       await transaction.travelNote.update({
@@ -233,11 +247,17 @@ export class TravelNotesService {
     if (request.cityId && request.cityName) {
       throw new BadRequestException("도시ID[cityId]와 도시 이름[cityName] 중 하나만 입력해야 합니다.");
     }
+    if (!request.cityId && !request.cityName) {
+      throw new BadRequestException("도시ID[cityId]와 도시 이름[cityName] 중 하나는 입력해야 합니다.");
+    }
+    if (request.cityName && request.cityName.length > 20) {
+      throw new BadRequestException("도시 이름[cityName]은 20자까지 입력 가능합니다.");
+    }
     if (request.mainImageIndex && (request.mainImageIndex < 1 || request.mainImageIndex > 6)) {
-      throw new BadRequestException("메인 이미지 인덱스는 1~6 사이만 가능합니다.");
+      throw new BadRequestException("메인 이미지 인덱스[mainImageIndex]는 1~6 사이만 가능합니다.");
     }
     if (request.review && request.review.length > 280) {
-      throw new BadRequestException("감상문은 280자까지 입력 가능합니다.");
+      throw new BadRequestException("감상문[review]은 280자까지 입력 가능합니다.");
     }
   }
 }

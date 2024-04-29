@@ -32,9 +32,9 @@ export const 사용자_초기화 = async (prismaService: PrismaService) => {
 export const 임의사용자_생성_로그인 = async (
   app: INestApplication,
   prismaService: PrismaService,
-): Promise<{ userId: string; accessToken: string }> => {
-  const userId = v4();
-  await 사용자_생성(prismaService, userId);
-  const accessToken = await 사용자_로그인(app, userId);
-  return { userId, accessToken };
+): Promise<{ userId: number; account: string; accessToken: string }> => {
+  const account = v4();
+  const userEntity = await 사용자_생성(prismaService, account);
+  const accessToken = await 사용자_로그인(app, account);
+  return { userId: userEntity.id, account, accessToken };
 };

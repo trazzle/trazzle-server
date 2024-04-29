@@ -5,7 +5,7 @@ import { HttpExceptionFilter } from "src/filters/http-exception.filter";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as Supertest from "supertest";
 import TestAgent from "supertest/lib/agent";
-import { putObjectCommandDto } from "src/modules/core/aws-s3/dtos/s3-command.dto";
+import { deleteObjectCommandDto, putObjectCommandDto } from "src/modules/core/aws-s3/dtos/s3-command.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 
 const awsS3ServiceMock = {
@@ -16,6 +16,9 @@ const awsS3ServiceMock = {
       Key: Key,
       url: `http://localhost/${Key}`,
     };
+  },
+  deleteImageFromS3Bucket(dto: deleteObjectCommandDto) {
+    console.log(`[awsS3ServiceMock]: ${dto.Key} is deleted.`);
   },
 };
 
