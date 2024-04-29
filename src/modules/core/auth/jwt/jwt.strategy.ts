@@ -45,7 +45,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       return user;
     } catch (e) {
-      if (e instanceof UnauthorizedException) {
+      if (e instanceof UnauthorizedException && e.message === "액세스 토큰이 만료하였습니다.") {
         throw new AccessTokenExpiredException();
       }
       throw e;

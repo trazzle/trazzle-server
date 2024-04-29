@@ -10,6 +10,7 @@ import { CountriesModule } from "src/modules/conuntries/countries.module";
 import { CitiesModule } from "src/modules/cities/cities.module";
 import { MagnetsModule } from "./modules/magnets/magnets.module";
 import { TermsModule } from "./modules/terms/terms.module";
+import { BackOfficeModule } from "src/modules/back-office/back-office.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TermsModule } from "./modules/terms/terms.module";
       { path: "/api/cities", module: CitiesModule },
       { path: "/api/magnets", module: MagnetsModule },
       { path: "/terms", module: TermsModule },
+      { path: "/api/back-office", module: BackOfficeModule },
     ]),
   ],
   controllers: [AppController],

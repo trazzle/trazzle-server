@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
+import { IsEnum } from "class-validator";
+
 export class UserEntity implements User {
   @ApiProperty({
     description: "유저 PK",
@@ -33,4 +35,12 @@ export class UserEntity implements User {
     description: "유저 프로필 이미지",
   })
   profileImageURL: string | null;
+
+  @ApiProperty({
+    description: "유저 권한",
+  })
+  @IsEnum(Role, {
+    message: `role must be one of these values: ${Object.values(Role).join(", ")}`,
+  })
+  role: Role;
 }
