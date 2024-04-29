@@ -44,7 +44,10 @@ model TravelNote {
 
   city     City?   @relation(fields: [cityId], references: [id])
   cityId   Int?
-  cityName String?
+  cityName String? @db.VarChar(20)
+
+  Country Country@relation(fields: [countryCode], references: [code])
+  countryCode String @unique
 
   images TravelImage[]
   User   User?         @relation(fields: [userId], references: [id])
@@ -70,7 +73,9 @@ model Country {
   continent String? // 대륙
   createdAt DateTime @default(now()) // 생성일
   updatedAt DateTime @updatedAt // 수정일
+
   City      City[]
+  TravelNote TravelNote?
 }
 
 model City {

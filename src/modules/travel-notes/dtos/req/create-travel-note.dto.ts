@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, MaxLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 import { Transform } from "class-transformer";
 import { LocalDate } from "@js-joda/core";
 import { isNumberOrElseThrow, isOptionalOrNumberOrElseThrow, toLocalDate } from "src/util/transform";
@@ -39,15 +39,14 @@ export class CreateTravelNoteDto {
     example: "여행기 내용",
     required: false,
   })
-  //@IsNotEmpty({ message: "여행기[review]는 문자열이어야 합니다." })
   @IsOptional()
   @MaxLength(280, {
     message: "여행기[review]는 최대 280글자까지 가능합니다.",
   })
   review: string;
 
-  // @IsNumber({}, { message: '도시ID[cityId]는 숫자여야 합니다.' })
-  // @IsOptional()
+  @IsOptional()
+  @IsNumber({}, { message: "도시ID[cityId]는 숫자여야 합니다." })
   @ApiProperty({
     description: "도시 고유 PK",
     example: 1,
@@ -62,6 +61,8 @@ export class CreateTravelNoteDto {
     required: false,
   })
   @IsOptional()
+  @IsString()
+  @MaxLength(20)
   cityName: string;
 
   @ApiProperty({

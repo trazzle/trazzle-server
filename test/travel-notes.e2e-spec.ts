@@ -76,6 +76,20 @@ describe("여행기", () => {
       expect(response.status).toBe(HttpStatus.CREATED);
     });
 
+    it("기타 도시 글자수가 20자가 넘으면 코드 400을 반환한다", async () => {
+      const response = await 여행일지_생성(app, accessToken, {
+        startDate: LocalDate.of(2024, 3, 20),
+        endDate: LocalDate.of(2024, 3, 25),
+        title: "기타 도시 여행",
+        review: "오늘은 기타도시를 처음가봤고, 한국에 이런 이국적인 도시가 한국에 있을줄은 정말 몰랐다.",
+        cityId: null,
+        cityName: "city_name_have_a_long_length_logger_than_20",
+        mainImageIndex: 1,
+      });
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    });
+
     it("99개의 여행기가 존재할 때 등록 요청하면 응답 코드 200를 반환 한다.", async () => {
       const body = {
         startDate: LocalDate.of(2024, 3, 20),
