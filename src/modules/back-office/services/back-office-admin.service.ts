@@ -1,6 +1,9 @@
 import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
+import { TAKE_20_PER_PAGE } from "src/commons/constants/pagination.constant";
+import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
+import { UserEntity } from "src/modules/users/entities/user.entity";
 
 @Injectable()
 export class BackOfficeAdminService {
@@ -44,5 +47,45 @@ export class BackOfficeAdminService {
         },
       });
     });
+  }
+
+  getAdmins(dto: GetAdminsRequestBodyDto): Promise<UserEntity[]> {
+    const { cursor, name } = dto;
+    return this.prismaService.user.findMany({
+      take: TAKE_20_PER_PAGE,
+      cursor: {
+        id: cursor ?? 1,
+      },
+      where: {
+        AND: [
+          {
+            role: "ADMIN",
+          },
+          {
+            name: name,
+          },
+        ],
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+  getAdminInfo(userId: number) {
+    const user = this.prismaService.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+    return user;
+  }
+
+  updateAdminInfo() {}
+
+  deleteAdmin(userId: number) {
+    const deletedAdminUser = this.prismaService.user.delete({
+      where: { id: userId },
+    });
+    return deletedAdminUser;
   }
 }
