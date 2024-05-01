@@ -3,6 +3,7 @@ import { Transform } from "class-transformer";
 import { LocalDate } from "@js-joda/core";
 import { isNumberOrElseThrow, isOptionalOrNumberOrElseThrow, toLocalDate } from "src/util/transform";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotBlank } from "src/validator/is-not-blank";
 
 export class CreateTravelNoteDto {
   @ApiProperty({
@@ -28,7 +29,7 @@ export class CreateTravelNoteDto {
     example: "서울 여행",
     required: true,
   })
-  @IsNotEmpty({ message: "제목[title]은 문자열이어야 합니다." })
+  @IsNotBlank({ message: "제목[title]은 필수 입력값입니다." })
   @MaxLength(20, {
     message: "제목[title]은 최대 20글자까지 가능합니다.",
   })
