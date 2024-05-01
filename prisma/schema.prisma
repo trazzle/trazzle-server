@@ -47,7 +47,7 @@ model TravelNote {
   cityName String? @db.VarChar(20)
 
   Country     Country? @relation(fields: [countryCode], references: [code])
-  countryCode String?  @unique
+  countryCode String?  @unique @db.VarChar(2) // 국가 코드
 
   images TravelImage[]
   User   User?         @relation(fields: [userId], references: [id])
