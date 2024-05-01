@@ -15,5 +15,3 @@ export const 마그넷_생성 = async (prismaService: PrismaService, url: string
   );
   await prismaService.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;
 };
-
-export const 마그넷_조회 =

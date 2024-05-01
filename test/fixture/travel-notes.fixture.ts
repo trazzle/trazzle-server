@@ -48,6 +48,10 @@ export const 여행기_생성 = async (
     request.field("cityName", body.cityName);
   }
 
+  if (body.countryCode) {
+    request.field("countryCode", body.countryCode);
+  }
+
   if (body.mainImageIndex) {
     request.field("mainImageIndex", body.mainImageIndex);
   }
@@ -98,11 +102,15 @@ export const 여행기_수정 = async (
   }
 
   if (body.cityId) {
-    request.field("cityName", body.cityId);
+    request.field("cityId", body.cityId);
   }
 
   if (body.cityName) {
     request.field("cityName", body.cityName);
+  }
+
+  if (body.countryCode) {
+    request.field("countryCode", body.countryCode);
   }
 
   if (body.mainImageIndex) {

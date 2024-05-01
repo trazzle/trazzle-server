@@ -1,10 +1,10 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
-import { 임의사용자_생성_로그인 } from "./fixture/user.fixture";
-import { 국가_생성 } from "./fixture/country.fixture";
-import { 도시_생성, 도시_조회, 도시_초기화 } from "./fixture/city.fixture";
-import { 전체_테이블_초기화 } from "./fixture/common.fixture";
-import { initializeApp } from "./common.e2e-spec";
+import { LoginResponse, 임의사용자_생성_로그인 } from "../../fixture/user.fixture";
+import { 국가_생성, 국가_생성_검증 } from "../../fixture/country.fixture";
+import { 도시_생성, 도시_조회, 도시_초기화 } from "../../fixture/city.fixture";
+import { initializeApp, tearDownApp } from "../../fixture/common.fixture";
+import { Role } from "@prisma/client";
 
 /**
  * https://jojoldu.tistory.com/656
@@ -13,14 +13,15 @@ import { initializeApp } from "./common.e2e-spec";
 describe("도시", () => {
   let app: INestApplication;
   let prismaService: PrismaService;
-  let accessToken: string;
+  let admin: LoginResponse;
+  let countryCode;
 
   beforeAll(async () => {
     app = await initializeApp();
     prismaService = app.get<PrismaService>(PrismaService);
-    const result = await 임의사용자_생성_로그인(app, prismaService);
-    accessToken = result.accessToken;
-    await 국가_생성(app, accessToken, {
+    admin = await 임의사용자_생성_로그인(app, prismaService, Role.ADMIN);
+
+    countryCode = await 국가_생성_검증(app, admin.accessToken, {
       code: "KR",
       name: "대한민국",
       continent: "Asia",
@@ -34,17 +35,16 @@ describe("도시", () => {
   afterEach(async () => {});
 
   afterAll(async () => {
-    await 전체_테이블_초기화(prismaService);
-    await app.close();
+    await tearDownApp(app);
   });
 
   describe("도시 생성", () => {
     it(
       "도시가 정상적으로 생성 된다.",
       async () => {
-        const response = await 도시_생성(app, accessToken, {
-          name: "대한민국",
-          countryCode: "KR",
+        const response = await 도시_생성(app, admin.accessToken, {
+          name: "서울",
+          countryCode,
         });
         expect(response.status).toBe(HttpStatus.CREATED);
         expect(response.body).toBeDefined();
@@ -55,9 +55,9 @@ describe("도시", () => {
     it(
       "도시명을 입력하지 않으면 응답 코드 400을 반환 한다.",
       async () => {
-        const response = await 도시_생성(app, accessToken, {
+        const response = await 도시_생성(app, admin.accessToken, {
           name: null,
-          countryCode: "KR",
+          countryCode,
         });
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       },
@@ -67,8 +67,8 @@ describe("도시", () => {
     it(
       "국가 코드를 입력하지 않으면 응답 코드 400을 반환 한다.",
       async () => {
-        const response = await 도시_생성(app, accessToken, {
-          name: "대한민국",
+        const response = await 도시_생성(app, admin.accessToken, {
+          name: "서울",
           countryCode: null,
         });
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -81,25 +81,25 @@ describe("도시", () => {
     it(
       "국가 코드로 도시 목록을 조회 하면 응답 코드 200과 함께 해당 국가의 모든 도시가 반환 된다.",
       async () => {
-        await 국가_생성(app, accessToken, {
+        await 국가_생성(app, admin.accessToken, {
           code: "JP",
           name: "일본",
           continent: "Asia",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "서울",
           countryCode: "KR",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "부산",
           countryCode: "KR",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "도쿄",
           countryCode: "JP",
         });
 
-        const response = await 도시_조회(app, accessToken, { countryCode: "KR" });
+        const response = await 도시_조회(app, admin.accessToken, { countryCode: "KR" });
 
         expect(response.status).toBe(HttpStatus.OK);
         expect(response.body).toEqual(
@@ -116,25 +116,25 @@ describe("도시", () => {
     it(
       "파라미터 없이 도시 목록을 조회 하면 응답 코드 200과 함께 모든 도시가 반환 된다.",
       async () => {
-        await 국가_생성(app, accessToken, {
+        await 국가_생성(app, admin.accessToken, {
           code: "JP",
           name: "일본",
           continent: "Asia",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "서울",
           countryCode: "KR",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "부산",
           countryCode: "KR",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "도쿄",
           countryCode: "JP",
         });
 
-        const response = await 도시_조회(app, accessToken, {});
+        const response = await 도시_조회(app, admin.accessToken, {});
 
         expect(response.status).toBe(HttpStatus.OK);
         expect(response.body).toEqual(
@@ -151,16 +151,16 @@ describe("도시", () => {
     it(
       "도시명으로 도시 목록을 조회 하면 응답 코드 200과 함께 해당 도시가 반환 된다.",
       async () => {
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "서울",
           countryCode: "KR",
         });
-        await 도시_생성(app, accessToken, {
+        await 도시_생성(app, admin.accessToken, {
           name: "부산",
           countryCode: "KR",
         });
 
-        const response = await 도시_조회(app, accessToken, { name: "서울" });
+        const response = await 도시_조회(app, admin.accessToken, { name: "서울" });
 
         expect(response.status).toBe(HttpStatus.OK);
         expect(response.body).toEqual(expect.arrayContaining([expect.objectContaining({ name: "서울" })]));

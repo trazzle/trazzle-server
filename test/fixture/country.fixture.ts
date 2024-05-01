@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import * as Supertest from "supertest";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { 테이블_초기화 } from "./common.fixture";
@@ -10,9 +10,21 @@ export const 국가_초기화 = async (prismaService: PrismaService) => {
 
 export const 국가_생성 = async (app: INestApplication, accessToken: string, request: CreateCountryDto) => {
   return Supertest.agent(app.getHttpServer())
-    .post("/api/countries")
+    .post("/api/back-office/countries")
     .set("Authorization", `Bearer ${accessToken}`)
     .send(request);
+};
+
+export const 국가_생성_검증 = async (
+  app: INestApplication,
+  accessToken: string,
+  request: CreateCountryDto,
+): Promise<string> => {
+  const countryResponse = await 국가_생성(app, accessToken, request);
+  expect(countryResponse.status).toBe(HttpStatus.CREATED);
+  const countryCode = countryResponse.body.code;
+  expect(countryCode).toBeDefined();
+  return countryCode;
 };
 
 export const 국가_조회 = async (app: INestApplication, accessToken: string) => {
