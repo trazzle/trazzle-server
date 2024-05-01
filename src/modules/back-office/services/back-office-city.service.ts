@@ -10,24 +10,17 @@ export class BackOfficeCityService {
   create(createCityDto: CreateCityDto) {
     const { name, countryCode } = createCityDto;
 
-    this.prismaService.$transaction(async transaction => {
-      const city = await transaction.city.findMany({
-        where: {
-          OR: [
-            { name: { contains: name } },
-            {
-              countryCode: { contains: countryCode },
-            },
-          ],
-        },
+    return this.prismaService.$transaction(async transaction => {
+      // 같은 국가 코드와 이름을 가진 도시가 있는지 확인
+      const count = await transaction.city.count({
+        where: { name, countryCode },
       });
-
-      if (city.length > 0) {
+      if (count > 0) {
         throw new ConflictException("이미 존재하는 도시 입니다.");
       }
 
       // 신규 도시 등록
-      return await transaction.city.create({
+      return transaction.city.create({
         data: {
           name: createCityDto.name,
           countryCode: createCityDto.countryCode,
