@@ -176,6 +176,21 @@ describe("여행기 등록", () => {
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     });
 
+    it("제목이 공백 문자열이면 응답 코드 400을 반환 한다.", async () => {
+      const response = await 여행기_생성(app, user.accessToken, {
+        startDate: LocalDate.of(2024, 3, 20),
+        endDate: LocalDate.of(2024, 3, 25),
+        title: " ",
+        review: "서울여행 재밌다.",
+        cityId: cityId,
+        cityName: null,
+        countryCode: null,
+        mainImageIndex: 1,
+      });
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    });
+
     it("제목의 길이가 20자를 넘으면 응답 코드 400을 반환 한다.", async () => {
       const response = await 여행기_생성(app, user.accessToken, {
         startDate: LocalDate.of(2024, 3, 20),
