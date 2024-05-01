@@ -22,8 +22,8 @@ model User {
 
   intro           String?
   profileImageURL String?
-  role Role @default(USER)
-  TravelNote TravelNote[]
+  role            Role         @default(USER)
+  TravelNote      TravelNote[]
 }
 
 enum Role {
@@ -46,8 +46,8 @@ model TravelNote {
   cityId   Int?
   cityName String? @db.VarChar(20)
 
-  Country Country@relation(fields: [countryCode], references: [code])
-  countryCode String @unique
+  Country     Country? @relation(fields: [countryCode], references: [code])
+  countryCode String?  @unique
 
   images TravelImage[]
   User   User?         @relation(fields: [userId], references: [id])
@@ -74,7 +74,7 @@ model Country {
   createdAt DateTime @default(now()) // 생성일
   updatedAt DateTime @updatedAt // 수정일
 
-  City      City[]
+  City       City[]
   TravelNote TravelNote?
 }
 

@@ -56,12 +56,13 @@ export class TravelNotesService {
       const travelNote = await transaction.travelNote.create({
         data: {
           userId,
-          cityId: dto.cityId,
-          cityName: dto.cityName,
           title: dto.title,
           startDate: dto.startDate.toString(),
           endDate: dto.endDate.toString(),
           review: dto.review,
+          cityId: dto.cityId,
+          countryCode: dto.countryCode,
+          cityName: dto.cityName,
         },
       });
 
@@ -252,6 +253,10 @@ export class TravelNotesService {
     }
     if (request.cityName && request.cityName.length > 20) {
       throw new BadRequestException("도시 이름[cityName]은 20자까지 입력 가능합니다.");
+
+      if (!request.countryCode) {
+        throw new BadRequestException("기타 도시 선택 시 국가 코드[countryCode]는 필수 입니다.");
+      }
     }
     if (request.mainImageIndex && (request.mainImageIndex < 1 || request.mainImageIndex > 6)) {
       throw new BadRequestException("메인 이미지 인덱스[mainImageIndex]는 1~6 사이만 가능합니다.");

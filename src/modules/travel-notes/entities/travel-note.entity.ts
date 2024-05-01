@@ -46,6 +46,12 @@ export class TravelNoteEntity implements TravelNote {
   cityName: string;
 
   @ApiProperty({
+    description: "국가 코드",
+    example: "KR",
+  })
+  countryCode: string;
+
+  @ApiProperty({
     description: "작성자 고유번호 PK",
     example: 1,
   })
