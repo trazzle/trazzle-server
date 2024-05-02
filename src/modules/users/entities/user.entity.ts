@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { User, Role } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { IsEnum } from "class-validator";
 
 export class UserEntity implements User {

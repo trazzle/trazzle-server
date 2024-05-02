@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { CreateCityDto } from "../dto/create-city.dto";
-import { UpdateCityDto } from "../dto/update-city.dto";
 import { SearchCityDto } from "../dto/search-city.dto";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { TAKE_20_PER_PAGE } from "src/commons/constants/pagination.constant";

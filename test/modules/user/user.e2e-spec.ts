@@ -1,9 +1,10 @@
 import { INestApplication } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { UserEntity } from "src/modules/users/entities/user.entity";
-import { 사용자_로그인, 사용자_삭제, 사용자_생성 } from "./fixture/user.fixture";
+import { 사용자_로그인, 사용자_생성 } from "../../fixture/user.fixture";
 import { v4 } from "uuid";
-import { initializeApp } from "./common.e2e-spec";
+
+import { initializeApp, tearDownApp } from "../../fixture/common.fixture";
 
 describe("사용자 & 로그인", () => {
   let app: INestApplication;
@@ -18,13 +19,10 @@ describe("사용자 & 로그인", () => {
 
   beforeEach(async () => {});
 
-  afterEach(async () => {
-    // await prismaService.$executeRaw`ROLLBACK;`; // 테스트 후 롤백 실행
-  });
+  afterEach(async () => {});
 
   afterAll(async () => {
-    await 사용자_삭제(prismaService, user.id);
-    await app.close();
+    await tearDownApp(app);
   });
 
   describe("로그인 (테스트용)", () => {

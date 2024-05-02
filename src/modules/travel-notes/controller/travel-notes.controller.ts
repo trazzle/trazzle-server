@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,6 +8,8 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -21,6 +24,7 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { TravelNoteEntity } from "../entities/travel-note.entity";
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
+import { isImageFile } from "src/util/file";
 
 @BearerAuth()
 @ApiTags("여행기")
@@ -125,7 +129,6 @@ export class TravelNotesController {
       image6?: Express.Multer.File[];
     },
   ) {
-    // console.log(body);
     const images = [
       { sequence: 1, file: files?.image1 ? files.image1[0] : null },
       { sequence: 2, file: files?.image2 ? files.image2[0] : null },
@@ -133,21 +136,24 @@ export class TravelNotesController {
       { sequence: 4, file: files?.image4 ? files.image4[0] : null },
       { sequence: 5, file: files?.image5 ? files.image5[0] : null },
       { sequence: 6, file: files?.image6 ? files.image6[0] : null },
-    ]
-      .filter(image => image.file) // 파일 존재
-      .filter(image => image.file.size > 0); // 사이즈 0 이상
+    ].filter(image => image.file); // 파일 존재
+
+    if (images.some(file => !isImageFile(file.file))) {
+      throw new BadRequestException("이미지 파일만 업로드 가능합니다.");
+    }
 
     return await this.travelNotesService.create(user.id, body, images);
   }
 
   @ApiOperation({
     summary: "여행기 목록 조회",
-    description: "로그인한 사용자의 여행기를 반환",
+    description: "조회 대상 사용자의 여행기 목록 조회",
   })
   @ApiOkResponse({ type: TravelNoteEntity, isArray: true })
   @Get()
-  async list(@SignInUser() user: UserEntity) {
-    return await this.travelNotesService.list(user.id);
+  async list(@Req() request: Request, @Query("userId", ParseIntPipe) userId: string) {
+    const newVar = await this.travelNotesService.list(Number(userId));
+    return newVar;
   }
 
   @ApiOperation({ summary: "여행기 단건 조회" })
@@ -163,8 +169,8 @@ export class TravelNotesController {
     description: "id에 부합하는 단건 조회",
   })
   @Get(":id")
-  async getOneTravelNote(@Param("id", ParseIntPipe) id: number, @SignInUser() user: UserEntity) {
-    return await this.travelNotesService.getOne(id);
+  async getOneTravelNote(@Param("id", ParseIntPipe) id: number) {
+    return this.travelNotesService.getOne(id);
   }
 
   @ApiOperation({ summary: "여행기 수정" })
@@ -276,11 +282,13 @@ export class TravelNotesController {
       { sequence: 4, file: files?.image4 ? files.image4[0] : null },
       { sequence: 5, file: files?.image5 ? files.image5[0] : null },
       { sequence: 6, file: files?.image6 ? files.image6[0] : null },
-    ]
-      .filter(image => image.file) // 파일 존재
-      .filter(image => image.file.size > 0); // 사이즈 0 이상
+    ].filter(image => image.file); // 파일 존재
 
-    return await this.travelNotesService.update(user.id, id, body, images);
+    if (images.some(file => !isImageFile(file.file))) {
+      throw new BadRequestException("이미지 파일만 업로드 가능합니다.");
+    }
+
+    return this.travelNotesService.update(user.id, id, body, images);
   }
 
   @ApiConsumes("application/json")
@@ -294,6 +302,6 @@ export class TravelNotesController {
   })
   @Delete(":id")
   async delete(@SignInUser() user: UserEntity, @Param("id", ParseIntPipe) id: number) {
-    return await this.travelNotesService.delete(user.id, id);
+    return this.travelNotesService.delete(user.id, id);
   }
 }

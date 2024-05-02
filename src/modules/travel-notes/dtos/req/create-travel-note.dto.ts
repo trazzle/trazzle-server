@@ -3,6 +3,7 @@ import { Transform } from "class-transformer";
 import { LocalDate } from "@js-joda/core";
 import { isNumberOrElseThrow, isOptionalOrNumberOrElseThrow, toLocalDate } from "src/util/transform";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotBlank } from "src/validator/is-not-blank";
 
 export class CreateTravelNoteDto {
   @ApiProperty({
@@ -24,19 +25,19 @@ export class CreateTravelNoteDto {
   endDate: LocalDate;
 
   @ApiProperty({
-    description: "제목",
-    example: "여행기 제목",
+    description: "여행기 제목",
+    example: "서울 여행",
     required: true,
   })
-  @IsNotEmpty({ message: "제목[title]은 문자열이어야 합니다." })
+  @IsNotBlank({ message: "제목[title]은 필수 입력값입니다." })
   @MaxLength(20, {
     message: "제목[title]은 최대 20글자까지 가능합니다.",
   })
   title: string;
 
   @ApiProperty({
-    description: "여행기",
-    example: "여행기 내용",
+    description: "여행기 내용",
+    example: "여행기 내용 입니다.",
     required: false,
   })
   @IsOptional()
@@ -56,7 +57,7 @@ export class CreateTravelNoteDto {
   cityId: number;
 
   @ApiProperty({
-    description: "도시명(도시ID가 없을 경우에만 입력 -> 기타도시 선택시)",
+    description: "도시명 / 도시ID가 없을 경우에만 입력 -> 기타도시 선택시",
     example: "Seoul",
     required: false,
   })
@@ -64,6 +65,15 @@ export class CreateTravelNoteDto {
   @IsString()
   @MaxLength(20)
   cityName: string;
+
+  @ApiProperty({
+    description: "국가코드 / 도시ID가 없을 경우에만 입력 -> 기타도시 선택시",
+    example: "KR",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  countryCode: string;
 
   @ApiProperty({
     description: "메인 이미지 인덱스 (1 - 6)",
