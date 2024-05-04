@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { BackOfficeAdminService } from "src/modules/back-office/services/back-office-admin.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
 import { AdminGuard } from "src/guards/admin-auth.guard";
 import { AdminBearerAuth } from "src/decorators/admin-auth.decorator";
+import { UserEntity } from "src/modules/users/entities/user.entity";
+import { SignInUser } from "src/decorators/sign-in-user.decorator";
+import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
 
 @Controller("admins")
 @ApiTags("백오피스 API - 관리자")
@@ -11,6 +14,7 @@ export class BackOfficeAdminController {
   constructor(private readonly backOfficeAdminService: BackOfficeAdminService) {}
 
   @ApiOperation({ summary: "신규 관리자 회원 생성" })
+  @ApiOkResponse({ description: "신규 관리자 회원정보", type: UserEntity })
   @Post()
   createAdmin(@Body() body: CreateAdminRequestBodyDto) {
     return this.backOfficeAdminService.createAdmin(body);
@@ -20,8 +24,8 @@ export class BackOfficeAdminController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: "신규 관리자 회원 목록 조회" })
   @Get()
-  getAdmins() {
-    return "getAdmins";
+  getAdmins(@Query() dto: GetAdminsRequestBodyDto) {
+    return this.backOfficeAdminService.getAdmins(dto);
   }
 
   @AdminBearerAuth(AdminGuard)
@@ -29,22 +33,24 @@ export class BackOfficeAdminController {
   @ApiOperation({ summary: "신규 관리자 회원 단건 조회" })
   @Get(":id")
   getAdminInfo(@Param("id", ParseIntPipe) id: number) {
-    return "getAdminInfo" + id;
+    return this.backOfficeAdminService.getAdminInfo(id);
   }
 
   @AdminBearerAuth(AdminGuard)
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: "관리자 회원 정보 수정" })
   @Patch()
-  updateAdminInfo() {
-    return "updateAdminInfo";
+  updateAdminInfo(@Body() body: UpdateAdminInfoRequestDto, @SignInUser() adminUser: UserEntity) {
+    return this.backOfficeAdminService.updateAdminInfo();
   }
 
   @AdminBearerAuth(AdminGuard)
   @UseGuards(AdminGuard)
+  @ApiNoContentResponse({ description: "관리자 탈퇴 성공" })
   @ApiOperation({ summary: "관리자 회원 탈퇴" })
   @Delete()
-  deleteAdmin() {
-    return "deleteAdmin";
+  deleteAdmin(@SignInUser() adminUser: UserEntity) {
+    // 탈퇴처리된 유저는 유저데이터로우 삭제
+    return this.backOfficeAdminService.deleteAdmin(adminUser.id);
   }
 }
