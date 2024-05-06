@@ -3,16 +3,25 @@ import { Module } from "@nestjs/common";
 import { WinstonModule } from "nest-winston";
 import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
+import { enhanceLogLevel } from "src/modules/core/logger/logger.helper";
 
 @Module({
   imports: [
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
-          level: "info", // 콘솔 로그 레벨 설정
+          level: "debug",
           format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.printf(info => `${info.timestamp} [${info.level.toUpperCase()}] - ${info.message}`),
+            winston.format.timestamp({
+              format: "YYYY. MM. DD. A hh:mm:ss",
+            }),
+            winston.format.colorize({
+              all: true,
+            }),
+            // winston.format.printf(({ level, message, timestamp, context }) => {
+            winston.format.printf(({ level, message, timestamp, context }) => {
+              return `[Nest] ${process.pid}  - ${timestamp}     ${enhanceLogLevel(level)} [${context || "Context not available"}] ${message}`;
+            }),
           ),
         }),
         new DailyRotateFile({

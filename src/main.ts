@@ -10,9 +10,12 @@ import { ValidationPipe } from "@nestjs/common";
 import { AllExceptionFilter } from "src/filters/all-exception.filter";
 import { HttpExceptionFilter } from "src/filters/http-exception.filter";
 import "@js-joda/timezone";
+import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
   app.useGlobalFilters(new AllExceptionFilter(), new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
