@@ -13,7 +13,7 @@ const profile: Profile = process.env.NODE_ENV as Profile;
       envFilePath: setEnvFilePath(profile),
       isGlobal: true,
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid(Profile.DEVELOPMENT, Profile.PRODUCTION).required(),
+        NODE_ENV: Joi.string().valid(Profile.TEST, Profile.DEVELOPMENT, Profile.PRODUCTION).required(),
         // Mysql
         SERVER_PORT: Joi.number().default(3000),
         DATABASE_URL: Joi.string().required(),
