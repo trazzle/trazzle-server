@@ -9,8 +9,19 @@ export class AllExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    // @ts-ignore
-    this.logger.error(exception.stack);
+    const { method, originalUrl } = request;
+
+    let stack = "No stack trace available";
+    if (typeof exception === "object" && exception !== null && "stack" in exception) {
+      stack = (exception as Error).stack || "Stack unavailable";
+    }
+
+    try {
+      const message = `${method} ${originalUrl} query=${JSON.stringify(request.query)} param=${JSON.stringify(request.params)} body=${JSON.stringify(request.body)} ${stack}`;
+      this.logger.error(message);
+    } catch (e) {
+      this.logger.error(exception);
+    }
 
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       path: request.url,
