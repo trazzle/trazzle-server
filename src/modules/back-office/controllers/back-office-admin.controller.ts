@@ -7,6 +7,7 @@ import { AdminBearerAuth } from "src/decorators/admin-auth.decorator";
 import { UserEntity } from "src/modules/users/entities/user.entity";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
+import { UpdateAdminInfoRequestBodyDto } from "../dtos/req/update-admin-info-request-body.dto";
 
 @Controller("admins")
 @ApiTags("백오피스 API - 관리자")
@@ -40,8 +41,8 @@ export class BackOfficeAdminController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: "관리자 회원 정보 수정" })
   @Patch()
-  updateAdminInfo(@Body() body: UpdateAdminInfoRequestDto, @SignInUser() adminUser: UserEntity) {
-    return this.backOfficeAdminService.updateAdminInfo();
+  updateAdminInfo(@Body() body: UpdateAdminInfoRequestBodyDto, @SignInUser() adminUser: UserEntity) {
+    return this.backOfficeAdminService.updateAdminInfo({ userId: adminUser.id, ...body });
   }
 
   @AdminBearerAuth(AdminGuard)
