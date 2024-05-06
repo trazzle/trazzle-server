@@ -81,4 +81,5 @@ jobs:
             -e JWT_REFRESH_SECRET_KEY=${{ secrets.JWT_REFRESH_SECRET_KEY }} \
             -e JWT_REFRESH_TOKEN_EXPIRATION=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }} \
             -e JWT_REFRESH_TOKEN_EXPIRATION_TTL=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION_TTL }} \
+            -v ${{ env.LOG_FOLDER_PATH }}:/app/logs \
             ${{ secrets.DOCKER_HUB_USERNAME }}/trazzle-api:${{ needs.build.outputs.current_time }}

@@ -2,14 +2,18 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CustomConfigService } from "./custom-config.service";
 import Joi from "joi";
+import { setEnvFilePath } from "src/modules/core/config/env-file-path-loader";
+import { Profile } from "src/modules/core/config/constants/profiles";
+
+const profile: Profile = process.env.NODE_ENV as Profile;
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [".production.env", ".env"],
+      envFilePath: setEnvFilePath(profile),
       isGlobal: true,
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().default("development"),
+        NODE_ENV: Joi.string().valid(Profile.TEST, Profile.DEVELOPMENT, Profile.PRODUCTION).required(),
         // Mysql
         SERVER_PORT: Joi.number().default(3000),
         DATABASE_URL: Joi.string().required(),
