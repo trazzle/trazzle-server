@@ -5,7 +5,8 @@ import { 국가_생성_검증 } from "../../fixture/country.fixture";
 import { 도시_생성_검증 } from "../../fixture/city.fixture";
 import { initializeApp, tearDownApp } from "../../fixture/common.fixture";
 import { Role } from "@prisma/client";
-import { 마그넷_생성 } from "../../fixture/magnet.fixture";
+import { 마그넷_생성, 마그넷_초기화 } from "../../fixture/magnet.fixture";
+import { CreateMagnetDto } from "src/modules/back-office/dtos/req/create-magnet.dto";
 
 describe("백오피스 > 마그넷", () => {
   let app: INestApplication;
@@ -30,7 +31,9 @@ describe("백오피스 > 마그넷", () => {
     });
   });
 
-  beforeEach(async () => {});
+  beforeEach(async () => {
+    await 마그넷_초기화(prismaService);
+  });
 
   afterEach(async () => {});
 
@@ -42,7 +45,11 @@ describe("백오피스 > 마그넷", () => {
     it(
       "존재하는 도시의 ID를 이용하여 요청하면 응답 코드 201을 반환 한다.",
       async () => {
-        const response = await 마그넷_생성(app, admin.accessToken, cityId, "dog.jpg");
+        const dto: CreateMagnetDto = {
+          cityId: cityId,
+          cost: 100,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
         expect(response.status).toBe(HttpStatus.CREATED);
       },
       1000 * 1000,
@@ -51,7 +58,11 @@ describe("백오피스 > 마그넷", () => {
     it(
       "존재하지 않는 도시의 ID를 이용하여 요청하면 응답 코드 400을 반환 한다.",
       async () => {
-        const response = await 마그넷_생성(app, admin.accessToken, cityId + 1, "dog.jpg");
+        const dto: CreateMagnetDto = {
+          cityId: cityId + 1,
+          cost: 100,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       },
       1000 * 1000,
@@ -60,8 +71,64 @@ describe("백오피스 > 마그넷", () => {
     it(
       "이미지 파일을 포함하지 않고 요청하면 응답 코드 400을 반환 한다.",
       async () => {
-        const response = await 마그넷_생성(app, admin.accessToken, cityId + 1, "dog.jpg");
+        const dto: CreateMagnetDto = {
+          cityId: cityId,
+          cost: 100,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, null);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      },
+      1000 * 1000,
+    );
+
+    it(
+      "마그넷 가격을 입력하지 않고 요청하면 응답 코드 201을 반환 한다. (무료)",
+      async () => {
+        const dto: CreateMagnetDto = {
+          cityId: cityId,
+          cost: null,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
+        expect(response.status).toBe(HttpStatus.CREATED);
+      },
+      1000 * 1000,
+    );
+
+    it(
+      "마그넷 가격을 0으로 요청하면 응답 코드 201을 반환 한다. (무료)",
+      async () => {
+        const dto: CreateMagnetDto = {
+          cityId: cityId,
+          cost: 0,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
+        expect(response.status).toBe(HttpStatus.CREATED);
+      },
+      1000 * 1000,
+    );
+
+    it(
+      "마그넷 가격을 -100으로 요청하면 응답 코드 400을 반환 한다. (무료)",
+      async () => {
+        const dto: CreateMagnetDto = {
+          cityId: cityId,
+          cost: -100,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      },
+      1000 * 1000,
+    );
+
+    it(
+      "마그넷 가격을 100으로 요청하면 응답 코드 201을 반환 한다. (유료)",
+      async () => {
+        const dto: CreateMagnetDto = {
+          cityId: cityId,
+          cost: 100,
+        };
+        const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
+        expect(response.status).toBe(HttpStatus.CREATED);
       },
       1000 * 1000,
     );
