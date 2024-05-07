@@ -1,6 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
 import { MainModules } from "src/modules";
 import { LoggerMiddleware } from "./middlewares/logger.middleware";
 import { APP_PIPE, RouterModule } from "@nestjs/core";
@@ -25,9 +23,8 @@ import { BackOfficeModule } from "src/modules/back-office/back-office.module";
       { path: "/api/back-office", module: BackOfficeModule },
     ]),
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     // global pipe : validationPipe
     {
       provide: APP_PIPE,
