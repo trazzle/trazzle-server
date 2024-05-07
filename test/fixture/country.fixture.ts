@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 import * as Supertest from "supertest";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { 테이블_초기화 } from "./common.fixture";
-import { CreateCountryDto } from "src/modules/conuntries/dtos/create-country.dto";
+import { CreateCountryDto } from "src/modules/back-office/dtos/req/create-country.dto";
 
 export const 국가_초기화 = async (prismaService: PrismaService) => {
   return 테이블_초기화(prismaService, "Country");

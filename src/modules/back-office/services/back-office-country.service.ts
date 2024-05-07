@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from "@nestjs/common";
-import { CreateCountryDto } from "src/modules/conuntries/dtos/create-country.dto";
-import { UpdateCountryDto } from "src/modules/conuntries/dtos/update-country.dto";
+import { CreateCountryDto } from "src/modules/back-office/dtos/req/create-country.dto";
+import { UpdateCountryDto } from "src/modules/back-office/dtos/req/update-country.dto";
 import { CountryEntity } from "src/modules/conuntries/entities/country.entity";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 

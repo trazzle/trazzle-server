@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from "@nestjs/common";
-import { CreateCityDto } from "src/modules/cities/dto/create-city.dto";
-import { UpdateCityDto } from "src/modules/cities/dto/update-city.dto";
+import { CreateCityDto } from "src/modules/back-office/dtos/req/create-city.dto";
+import { UpdateCityDto } from "src/modules/back-office/dtos/req/update-city.dto";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 
 @Injectable()

@@ -2,7 +2,7 @@ import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { 테이블_초기화 } from "./common.fixture";
 import * as Supertest from "supertest";
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { CreateCityDto } from "src/modules/cities/dto/create-city.dto";
+import { CreateCityDto } from "src/modules/back-office/dtos/req/create-city.dto";
 import { SearchCityDto } from "src/modules/cities/dto/search-city.dto";
 
 export const 도시_초기화 = async (prismaService: PrismaService) => {

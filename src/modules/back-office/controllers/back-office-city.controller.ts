@@ -3,8 +3,8 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AdminBearerAuth } from "src/decorators/admin-auth.decorator";
 import { AdminGuard } from "src/guards/admin-auth.guard";
 import { BackOfficeCityService } from "src/modules/back-office/services/back-office-city.service";
-import { CreateCityDto } from "src/modules/cities/dto/create-city.dto";
-import { UpdateCityDto } from "src/modules/cities/dto/update-city.dto";
+import { CreateCityDto } from "src/modules/back-office/dtos/req/create-city.dto";
+import { UpdateCityDto } from "src/modules/back-office/dtos/req/update-city.dto";
 
 @AdminBearerAuth(AdminGuard)
 @UseGuards(AdminGuard)

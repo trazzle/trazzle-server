@@ -3,9 +3,9 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AdminBearerAuth } from "src/decorators/admin-auth.decorator";
 import { AdminGuard } from "src/guards/admin-auth.guard";
 import { BackOfficeCountryService } from "src/modules/back-office/services/back-office-country.service";
-import { CreateCountryDto } from "src/modules/conuntries/dtos/create-country.dto";
+import { CreateCountryDto } from "src/modules/back-office/dtos/req/create-country.dto";
 
-import { UpdateCountryDto } from "src/modules/conuntries/dtos/update-country.dto";
+import { UpdateCountryDto } from "src/modules/back-office/dtos/req/update-country.dto";
 
 @AdminBearerAuth(AdminGuard)
 @UseGuards(AdminGuard)
