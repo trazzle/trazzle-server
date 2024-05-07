@@ -1,9 +1,10 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
 import { TAKE_20_PER_PAGE } from "src/commons/constants/pagination.constant";
 import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
 import { UserEntity } from "src/modules/users/entities/user.entity";
+import { UpdateAdminInfoDto } from "../dtos/req/update-admin-info-request-body.dto";
 
 @Injectable()
 export class BackOfficeAdminService {
@@ -80,7 +81,24 @@ export class BackOfficeAdminService {
     return user;
   }
 
-  updateAdminInfo() {}
+  updateAdminInfo(dto: UpdateAdminInfoDto) {
+    const { userId, name } = dto;
+    this.prismaService.$transaction(async transaction => {
+      const admin = await transaction.user.findFirst({ where: { id: userId } });
+      if (!admin) {
+        throw new NotFoundException("존재하지 않은 관리자 회원입니다.");
+      }
+
+      return await transaction.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          name: name ?? admin.name,
+        },
+      });
+    });
+  }
 
   deleteAdmin(userId: number) {
     const deletedAdminUser = this.prismaService.user.delete({
