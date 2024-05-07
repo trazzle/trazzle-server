@@ -94,6 +94,8 @@ model City {
 model Magnet {
   id        Int      @id @default(autoincrement()) // PK
   url       String   @unique
+  isFree    Boolean  @default(true) // 무료 여부
+  cost      Int // 가격
   city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
   cityId    Int
   createdAt DateTime @default(now()) // 생성일
