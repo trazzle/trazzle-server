@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { putObjectCommandDto } from "src/modules/core/aws-s3/dtos/s3-command.dto";
@@ -31,6 +31,21 @@ export class BackOfficeMagnetService {
           isFree: dto.cost && dto.cost > 0,
           cost: dto.cost || 0,
         },
+      });
+    });
+  }
+
+  delete(id: number) {
+    return this.prismaService.$transaction(async transaction => {
+      const magnet = await transaction.magnet.findUnique({ where: { id } });
+      if (!magnet) {
+        throw new NotFoundException("존재하지 않는 마그넷입니다.");
+      }
+      // S3에서 이미지 삭제
+      await this.awsS3Service.delete(magnet.url);
+      // 이미지 삭제
+      await transaction.magnet.delete({
+        where: { id },
       });
     });
   }

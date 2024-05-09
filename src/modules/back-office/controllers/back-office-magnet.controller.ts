@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Delete,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   UploadedFiles,
@@ -50,8 +52,8 @@ export class BackOfficeMagnetController {
   }
 
   @ApiOperation({ summary: "마그넷 삭제" })
-  @Delete()
-  deleteMagnet() {
-    return "deleteMagnet";
+  @Delete(":id")
+  deleteMagnet(@Param("id", ParseIntPipe) id: number) {
+    return this.backOfficeMagnetService.delete(id);
   }
 }
