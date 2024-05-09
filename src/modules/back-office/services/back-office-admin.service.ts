@@ -10,12 +10,12 @@ import { UpdateAdminInfoDto } from "../dtos/req/update-admin-info-request-body.d
 export class BackOfficeAdminService {
   constructor(private prismaService: PrismaService) {}
 
-  createAdmin(dto: CreateAdminRequestBodyDto) {
+  async createAdmin(dto: CreateAdminRequestBodyDto) {
     const { name, account } = dto;
 
-    this.prismaService.$transaction(async transaction => {
+    const result = await this.prismaService.$transaction(async tx => {
       // account가 중복되는지 확인
-      const user = await transaction.user.findFirst({
+      const user = await tx.user.findFirst({
         where: {
           account: `admin-${account}`,
         },
@@ -29,7 +29,7 @@ export class BackOfficeAdminService {
         throw new ConflictException("이미 존재하는 관리자 유저입니다.");
       }
 
-      const newAdminUser = await transaction.user.create({
+      const newAdminUser = await tx.user.create({
         data: {
           name: name,
           account: `admin-${account}`,
@@ -37,17 +37,10 @@ export class BackOfficeAdminService {
         },
       });
 
-      return await transaction.user.findFirst({
-        where: {
-          id: newAdminUser.id,
-        },
-        select: {
-          id: true,
-          name: true,
-          account: true,
-        },
-      });
+      return newAdminUser;
     });
+
+    return result
   }
 
   getAdmins(dto: GetAdminsRequestBodyDto): Promise<UserEntity[]> {
@@ -81,15 +74,15 @@ export class BackOfficeAdminService {
     return user;
   }
 
-  updateAdminInfo(dto: UpdateAdminInfoDto) {
+  async updateAdminInfo(dto: UpdateAdminInfoDto) {
     const { userId, name } = dto;
-    this.prismaService.$transaction(async transaction => {
-      const admin = await transaction.user.findFirst({ where: { id: userId } });
+    await this.prismaService.$transaction(async tx => {
+      const admin = await tx.user.findFirst({ where: { id: userId } });
       if (!admin) {
         throw new NotFoundException("존재하지 않은 관리자 회원입니다.");
       }
 
-      return await transaction.user.update({
+      return await tx.user.update({
         where: {
           id: userId,
         },
