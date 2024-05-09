@@ -5,7 +5,7 @@ import { 국가_생성_검증 } from "../../fixture/country.fixture";
 import { 도시_생성_검증 } from "../../fixture/city.fixture";
 import { initializeApp, tearDownApp } from "../../fixture/common.fixture";
 import { Role } from "@prisma/client";
-import { 마그넷_생성, 마그넷_초기화 } from "../../fixture/magnet.fixture";
+import { 마그넷_삭제, 마그넷_생성, 마그넷_생성_검증, 마그넷_조회, 마그넷_초기화 } from "../../fixture/magnet.fixture";
 import { CreateMagnetDto } from "src/modules/back-office/dtos/req/create-magnet.dto";
 
 describe("백오피스 > 마그넷", () => {
@@ -129,6 +129,51 @@ describe("백오피스 > 마그넷", () => {
         };
         const response = await 마그넷_생성(app, admin.accessToken, dto, "dog.jpg");
         expect(response.status).toBe(HttpStatus.CREATED);
+      },
+      1000 * 1000,
+    );
+  });
+
+  describe("마그넷 조회", () => {
+    it(
+      "존재하는 도시의 ID를 이용하여 요청하면 응답 코드 200과 함께 마그넷 목록을 반환 한다.",
+      async () => {
+        await 마그넷_생성_검증(app, admin.accessToken, { cityId: cityId, cost: 100 }, "dog.jpg");
+        await 마그넷_생성_검증(app, admin.accessToken, { cityId: cityId, cost: 0 }, "dog.jpg");
+        const response = await 마그넷_조회(app, admin.accessToken, cityId);
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.length).toBe(2);
+      },
+      1000 * 1000,
+    );
+  });
+
+  describe("마그넷 수정", () => {});
+
+  describe("마그넷 삭제", () => {
+    it(
+      "존재하는 마그넷 ID를 이용하여 요청하면 응답 코드 200을 반환 한다.",
+      async () => {
+        let response = await 마그넷_생성_검증(app, admin.accessToken, { cityId, cost: 100 }, "dog.jpg");
+        const magnetId = response.body.id;
+        response = await 마그넷_삭제(app, admin.accessToken, magnetId);
+        expect(response.status).toBe(HttpStatus.OK);
+        response = await 마그넷_조회(app, admin.accessToken, cityId);
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.length).toBe(0);
+      },
+      1000 * 1000,
+    );
+    it(
+      "존재하지 않는 마그넷 ID를 이용하여 요청하면 응답 코드 404를 반환 한다.",
+      async () => {
+        let response = await 마그넷_생성_검증(app, admin.accessToken, { cityId, cost: 100 }, "dog.jpg");
+        const magnetId = response.body.id;
+        response = await 마그넷_삭제(app, admin.accessToken, magnetId + 1);
+        expect(response.status).toBe(HttpStatus.NOT_FOUND);
+        response = await 마그넷_조회(app, admin.accessToken, cityId);
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.length).toBe(1);
       },
       1000 * 1000,
     );

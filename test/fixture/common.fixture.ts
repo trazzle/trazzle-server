@@ -37,6 +37,9 @@ const awsS3ServiceMock = {
   deleteImageFromS3Bucket(dto: deleteObjectCommandDto) {
     console.log(`[awsS3ServiceMock]: ${dto.Key} is deleted.`);
   },
+  delete(url: string) {
+    console.log(`[awsS3ServiceMock]: ${url} is deleted.`);
+  },
 };
 
 export const initializeApp = async () => {
