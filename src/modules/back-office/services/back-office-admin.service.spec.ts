@@ -30,10 +30,12 @@ describe("BackOfficeAdminService", () => {
     expect(service).toBeDefined();
   });
   describe("getAdmins (관리자 리스트 조회)", () => {
-    it("관리자 데이터가 없는 경우에 비어있는 배열을 리턴한다.", async () => {
-      // 함수 호출
-      const result = service.getAdmins({});
-      expect(result).toEqual([]);
+    it("관리자 데이터가 없는 경우에 빈배열을 리턴한다.", async () => {
+      // prisma함수 호출
+      prismaService.user.findMany.mockResolvedValueOnce([]);
+
+      // 예상결과값과 비교
+      expect(service.getAdmins({})).resolves.toStrictEqual([]);
     });
   });
 
@@ -51,9 +53,15 @@ describe("BackOfficeAdminService", () => {
         profileImageUrl: null,
       };
 
-      // 함수 호출
-      const result = service.createAdmin({ name: name, account: account });
-      await expect(result).resolves.toEqual(expectedNewAdminUser);
+      // prisma 함수 호출
+      prismaService.user.findFirst.mockResolvedValue(null); // 초기 생성데이터 이다.
+      prismaService.user.create.mockResolvedValue(expectedNewAdminUser);
+
+      // mocking transactions
+      prismaService.$transaction.mockImplementation(callback => callback(prismaService));
+
+      const result = await service.createAdmin({ name: name, account: account });
+      await expect(result).toStrictEqual(expectedNewAdminUser);
     });
   });
 });
