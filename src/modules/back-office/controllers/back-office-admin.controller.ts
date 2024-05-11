@@ -17,8 +17,8 @@ export class BackOfficeAdminController {
   @ApiOperation({ summary: "신규 관리자 회원 생성" })
   @ApiOkResponse({ description: "신규 관리자 회원정보", type: UserEntity })
   @Post()
-  createAdmin(@Body() body: CreateAdminRequestBodyDto) {
-    return this.backOfficeAdminService.createAdmin(body);
+  async createAdmin(@Body() body: CreateAdminRequestBodyDto) {
+    return await this.backOfficeAdminService.createAdmin(body);
   }
 
   @AdminBearerAuth(AdminGuard)
@@ -41,8 +41,8 @@ export class BackOfficeAdminController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: "관리자 회원 정보 수정" })
   @Patch()
-  updateAdminInfo(@Body() body: UpdateAdminInfoRequestBodyDto, @SignInUser() adminUser: UserEntity) {
-    return this.backOfficeAdminService.updateAdminInfo({ userId: adminUser.id, ...body });
+  async updateAdminInfo(@Body() body: UpdateAdminInfoRequestBodyDto, @SignInUser() adminUser: UserEntity) {
+    return await this.backOfficeAdminService.updateAdminInfo({ userId: adminUser.id, ...body });
   }
 
   @AdminBearerAuth(AdminGuard)
