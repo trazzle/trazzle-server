@@ -33,8 +33,8 @@ export class BackOfficeAdminController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: "신규 관리자 회원 단건 조회" })
   @Get(":id")
-  getAdminInfo(@Param("id", ParseIntPipe) id: number) {
-    return this.backOfficeAdminService.getAdminInfo(id);
+  async getAdminInfo(@Param("id", ParseIntPipe) id: number) {
+    return await this.backOfficeAdminService.getAdminInfo(id);
   }
 
   @AdminBearerAuth(AdminGuard)

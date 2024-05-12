@@ -40,7 +40,7 @@ export class BackOfficeAdminService {
       return newAdminUser;
     });
 
-    return result
+    return result;
   }
 
   getAdmins(dto: GetAdminsRequestBodyDto): Promise<UserEntity[]> {
@@ -65,12 +65,15 @@ export class BackOfficeAdminService {
       },
     });
   }
-  getAdminInfo(userId: number) {
-    const user = this.prismaService.user.findFirst({
+  async getAdminInfo(userId: number) {
+    const user = await this.prismaService.user.findFirst({
       where: {
         id: userId,
       },
     });
+    if (!user) {
+      throw new NotFoundException("존재하지 않은 관리자 회원입니다.");
+    }
     return user;
   }
 
