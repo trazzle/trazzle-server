@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { BackOfficeAdminService } from "./back-office-admin.service";
 import { PrismaService } from "../../core/database/prisma/prisma.service";
 import { mockPrismaService } from "test/mock/mock-prisma-service";
+import { NotFoundException } from "@nestjs/common";
 
 describe("BackOfficeAdminService", () => {
   let prismaService;
@@ -31,8 +32,9 @@ describe("BackOfficeAdminService", () => {
   });
   describe("getAdmins (관리자 리스트 조회)", () => {
     it("관리자 데이터가 없는 경우에 빈배열을 리턴한다.", async () => {
+      const expectedResult = [];
       // prisma함수 호출
-      prismaService.user.findMany.mockResolvedValueOnce([]);
+      prismaService.user.findMany.mockResolvedValueOnce(expectedResult);
 
       // 예상결과값과 비교
       expect(service.getAdmins({})).resolves.toStrictEqual([]);
@@ -44,7 +46,7 @@ describe("BackOfficeAdminService", () => {
     const account: string = "test-1234";
 
     it("새로운 관리자 계정을 생성한다", async () => {
-      const expectedNewAdminUser = {
+      const expectedResult = {
         id: 1,
         name: name,
         account: account,
@@ -55,13 +57,52 @@ describe("BackOfficeAdminService", () => {
 
       // prisma 함수 호출
       prismaService.user.findFirst.mockResolvedValue(null); // 초기 생성데이터 이다.
-      prismaService.user.create.mockResolvedValue(expectedNewAdminUser);
+      prismaService.user.create.mockResolvedValue(expectedResult);
 
       // mocking transactions
       prismaService.$transaction.mockImplementation(callback => callback(prismaService));
 
       const result = await service.createAdmin({ name: name, account: account });
-      await expect(result).toStrictEqual(expectedNewAdminUser);
+      expect(result).toStrictEqual(expectedResult);
+    });
+
+    it("전체 회원의 수는 1명이다.", () => {
+      const expectedResult = [
+        {
+          id: 1,
+          name: name,
+          account: account,
+          role: "ADMIN",
+          intro: null,
+          profileImageUrl: null,
+        },
+      ];
+
+      // prisma 함수 호출
+      prismaService.user.findMany.mockResolvedValue(expectedResult);
+      expect(service.getAdmins({})).resolves.toStrictEqual(expectedResult);
+    });
+
+    it("id = 1 유저 검색이 성공된다", () => {
+      const expectedResult = {
+        id: 1,
+        name: name,
+        account: account,
+        role: "ADMIN",
+        intro: null,
+        profileImageUrl: null,
+      };
+
+      // prisma 함수 호출
+      prismaService.user.findFirst.mockResolvedValue(expectedResult);
+      expect(service.getAdminInfo(1)).resolves.toStrictEqual(expectedResult);
+    });
+
+    it("id = 2 유저 검색은 실패된다 - 유저가 존재하지 않는다.", () => {
+      expect(service.getAdminInfo(2)).rejects.toBeInstanceOf(NotFoundException);
     });
   });
+
+  describe("updateAdminInfo (관리자 정보 수정)", () => {})
+  describe("deleteAdmin (관리자 삭제)", () => {})
 });
