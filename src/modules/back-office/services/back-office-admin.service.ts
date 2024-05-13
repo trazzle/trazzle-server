@@ -79,13 +79,13 @@ export class BackOfficeAdminService {
 
   async updateAdminInfo(dto: UpdateAdminInfoDto) {
     const { userId, name } = dto;
-    await this.prismaService.$transaction(async tx => {
+    const result = await this.prismaService.$transaction(async tx => {
       const admin = await tx.user.findFirst({ where: { id: userId } });
       if (!admin) {
         throw new NotFoundException("존재하지 않은 관리자 회원입니다.");
       }
 
-      return await tx.user.update({
+      const updatedUser = await tx.user.update({
         where: {
           id: userId,
         },
@@ -93,11 +93,14 @@ export class BackOfficeAdminService {
           name: name ?? admin.name,
         },
       });
+
+      return updatedUser;
     });
+    return result;
   }
 
-  deleteAdmin(userId: number) {
-    const deletedAdminUser = this.prismaService.user.delete({
+   async deleteAdmin(userId: number) {
+    const deletedAdminUser = await this.prismaService.user.delete({
       where: { id: userId },
     });
     return deletedAdminUser;
