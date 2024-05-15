@@ -29,7 +29,7 @@ export class UsersService {
     return newUser;
   }
 
-  async updateUser(dto: UpdateUserDto) {
+  updateUser(dto: UpdateUserDto) {
     const { id, name, intro, profileImageFile } = dto;
 
     this.prismaService.$transaction(async transaction => {
@@ -63,7 +63,7 @@ export class UsersService {
         if (user.profileImageURL) {
           // 기존의 이미지와 디렉토리를 지운다
           await this.awsS3Service.deleteImageFromS3Bucket({
-            Key: `profiles/${id}`,
+            Key: `profiles/${id}/`,
           });
 
           // 4-2. s3에 새로운 프로필이미지로 업데이트한다.
@@ -83,6 +83,7 @@ export class UsersService {
     const deletedUser = this.prismaService.user.delete({
       where: { id: userId },
     });
+    // S3버킷도 삭제된다.
     return deletedUser;
   }
 }
