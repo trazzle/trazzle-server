@@ -9,8 +9,9 @@ import { OAuth2Client, TokenInfo } from "google-auth-library";
 import JwksRsa, { SigningKey } from "jwks-rsa";
 import { PrismaService } from "../../database/prisma/prisma.service";
 import { firstValueFrom } from "rxjs";
-import { SocialLoginResponseDto } from "src/modules/users/dtos/res/social-login-response.dto";
 import { SocialLoginFailedException } from "src/errors/social-login-failed.exception";
+import { SocialLoginResponseDto } from "src/modules/users/dtos/res/social-login-response.dto";
+import { LoginSucceedUserWithTokenResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @Injectable()
 export class AuthHelper {
@@ -24,7 +25,7 @@ export class AuthHelper {
     private readonly googleOAuthClient: OAuth2Client,
   ) {}
 
-  async signingWithSocial(dto: SignInOrSignUpRequestBodyDto): Promise<SocialLoginResponseDto> {
+  async signingWithSocial(dto: SignInOrSignUpRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
     try {
       const { oauthProvider, accessToken } = dto;
       let account, name, profileImageURL;
@@ -133,10 +134,9 @@ export class AuthHelper {
       });
 
       return {
-        id: user.id,
+        user_id: user.id,
         name: user.name,
-        account: user.account,
-        profileImageURL: user.profileImageURL,
+        profile_image: user.profileImageURL,
         intro: user.intro,
         access_token: access_token,
         refresh_token: refresh_token,

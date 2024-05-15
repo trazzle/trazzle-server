@@ -28,6 +28,8 @@ import { SocialLoginResponseDto } from "../dtos/res/social-login-response.dto";
 import { AuthHelper } from "src/modules/core/auth/helpers/auth.helper";
 import { UpdateAccessTokenRequestDto } from "../dtos/req/update-access-token-request.dto";
 import { UpdateAccessTokenResponseDto } from "../dtos/res/update-access-token-response.dto";
+import { LoginSucceedUserResponseDto } from "../dtos/res/login-succeed-user-response.dto";
+import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 
 @ApiTags("사용자 & 로그인")
 @Controller()
@@ -36,6 +38,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly authHelperService: AuthHelper,
     private readonly authService: AuthService,
+    private readonly awsS3Service: AwsS3Service,
   ) {}
 
   // 로그인한 회원정보 조회
@@ -45,9 +48,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async myProfile(
-    @SignInUser() user: UserEntity, // login required
+    @SignInUser() user: LoginSucceedUserResponseDto, // login required
   ) {
-    return await this.usersService.getOneUser(user.id);
+    return await this.usersService.getOneUser(user.user_id);
   }
 
   // 회원탈퇴
@@ -58,9 +61,9 @@ export class UsersController {
   @ApiNoContentResponse({ description: "탈퇴 성공" })
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async withdrawUser(@SignInUser() user: UserEntity) {
+  async withdrawUser(@SignInUser() user: LoginSucceedUserResponseDto) {
     // 탈퇴처리된 유저는 DB에 해당 데이터로우 삭제
-    return await this.usersService.deleteUser(user.id);
+    return await this.usersService.deleteUser(user.user_id);
   }
 
   // 로그아웃
@@ -69,8 +72,8 @@ export class UsersController {
   @ApiOkResponse({ description: "액세스 토큰 삭제" })
   @UseGuards(JwtAuthGuard)
   @Get("sign-out")
-  async signOut(@SignInUser() user: UserEntity) {
-    return await this.authService.signOut(user.id);
+  async signOut(@SignInUser() user: LoginSucceedUserResponseDto) {
+    return await this.authService.signOut(user.user_id);
   }
 
   // 소셜로그인
@@ -135,16 +138,22 @@ export class UsersController {
   })
   @Patch("profile")
   async updateUser(
-    @SignInUser() user: UserEntity,
+    @SignInUser() user: LoginSucceedUserResponseDto,
     @Body() body: UpdateUserRequestBodyDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const { name, intro } = body;
-    return await this.usersService.updateUser({
-      id: user.id,
-      name: name,
-      intro: intro,
-      profileImageFile: file,
+    // if (!file) {
+    //   // 수정이전 유저프로필 이미지
+    //   if (user.profile_image) {
+    //     await this.awsS3Service.getFileFromS3Bucket({ Key: `profiles/${user.profile_image}` });
+    //   }
+    // }
+    return this.usersService.updateUser({
+      id: user.user_id,
+      name: name ?? user.name,
+      intro: intro ?? user.intro,
+      profileImageFile: file ?? null,
     });
   }
 

@@ -7,6 +7,7 @@ import { RedisService } from "src/modules/core/redis/redis.service";
 import { PrismaService } from "../../database/prisma/prisma.service";
 import { UpdateAccessTokenRequestDto } from "src/modules/users/dtos/req/update-access-token-request.dto";
 import { UpdateAccessTokenResponseDto } from "src/modules/users/dtos/res/update-access-token-response.dto";
+import { LoginSucceedUserWithTokenResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -102,7 +103,7 @@ export class AuthService {
     }
   }
 
-  async signInAccount(account: string) {
+  async signInAccount(account: string): Promise<LoginSucceedUserWithTokenResponseDto> {
     const user = await this.prismaService.user.findFirst({
       where: { account },
     });
@@ -122,10 +123,9 @@ export class AuthService {
     });
 
     return {
-      id: user.id,
+      user_id: user.id,
       name: user.name,
-      account: user.account,
-      profileImageURL: user.profileImageURL,
+      profile_image: user.profileImageURL,
       intro: user.intro,
       access_token: access_token,
       refresh_token: refresh_token,
