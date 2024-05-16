@@ -3,6 +3,7 @@ import { BackOfficeAdminService } from "src/modules/back-office/services/back-of
 import { CustomConfigService } from "src/modules/core/config/custom-config.service";
 import { JwtService } from "@nestjs/jwt";
 import { RedisService } from "src/modules/core/redis/redis.service";
+import { CountriesService } from "src/modules/conuntries/service/countries.service";
 
 export const mockConfigService = {
   get: jest.fn(),
@@ -33,4 +34,8 @@ export const mockRedisService: MockClassType<RedisService> = {
   set: jest.fn(),
   del: jest.fn(),
   onModuleDestroy: jest.fn(),
+};
+
+export const mockCountriesService: MockClassType<CountriesService> = {
+  findAll: jest.fn(),
 };
