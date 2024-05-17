@@ -42,7 +42,10 @@ export class BackOfficeAdminController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: "관리자 회원 정보 수정" })
   @Patch()
-  async updateAdminInfo(@Body() body: UpdateAdminInfoRequestBodyDto, @SignInUser() adminUser: UserEntity) {
+  async updateAdminInfo(
+    @Body() body: UpdateAdminInfoRequestBodyDto,
+    @SignInUser() adminUser: LoginSucceedUserResponseDto,
+  ) {
     return await this.backOfficeAdminService.updateAdminInfo({ userId: adminUser.id, ...body });
   }
 

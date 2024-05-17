@@ -4,7 +4,7 @@ import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { GetUserTravelStatisticResponseDto } from "src/modules/users/dtos/res/get-user-travel-statistics-response.dto";
-import { UserEntity } from "src/modules/users/entities/user.entity";
+import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 import { UserStatisticsService } from "src/modules/users/services/statistics.service";
 
 @ApiTags("사용자 여행 통계")
@@ -20,7 +20,7 @@ export class UserStatisticsController {
   })
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getUserTravelStatistics(@SignInUser() user: UserEntity) {
+  async getUserTravelStatistics(@SignInUser() user: LoginSucceedUserResponseDto) {
     const { id } = user;
     const result = await this.statisticsService.getUserTravelStatistics(id);
     return result;
