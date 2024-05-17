@@ -18,13 +18,13 @@ import { CreateTravelNoteDto } from "src/modules/travel-notes/dtos/req/create-tr
 import { TravelNotesService } from "src/modules/travel-notes/service/travel-notes.service";
 import { UpdateTravelNoteDto } from "src/modules/travel-notes/dtos/req/update-travel-note.dto";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
-import { UserEntity } from "src/modules/users/entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { TravelNoteEntity } from "../entities/travel-note.entity";
 import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { isImageFile } from "src/util/file";
+import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @BearerAuth()
 @ApiTags("여행기")
@@ -117,7 +117,7 @@ export class TravelNotesController {
     ]),
   )
   async create(
-    @SignInUser() user: UserEntity,
+    @SignInUser() user: LoginSucceedUserResponseDto,
     @Body() body: CreateTravelNoteDto,
     @UploadedFiles()
     files: {
@@ -142,7 +142,7 @@ export class TravelNotesController {
       throw new BadRequestException("이미지 파일만 업로드 가능합니다.");
     }
 
-    return await this.travelNotesService.create(user.id, body, images);
+    return await this.travelNotesService.create(user.user_id, body, images);
   }
 
   @ApiOperation({
@@ -262,7 +262,7 @@ export class TravelNotesController {
     ]),
   )
   async update(
-    @SignInUser() user: UserEntity,
+    @SignInUser() user: LoginSucceedUserResponseDto,
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateTravelNoteDto,
     @UploadedFiles()
@@ -288,7 +288,7 @@ export class TravelNotesController {
       throw new BadRequestException("이미지 파일만 업로드 가능합니다.");
     }
 
-    return this.travelNotesService.update(user.id, id, body, images);
+    return this.travelNotesService.update(user.user_id, id, body, images);
   }
 
   @ApiConsumes("application/json")
@@ -301,7 +301,7 @@ export class TravelNotesController {
     example: 1,
   })
   @Delete(":id")
-  async delete(@SignInUser() user: UserEntity, @Param("id", ParseIntPipe) id: number) {
-    return this.travelNotesService.delete(user.id, id);
+  async delete(@SignInUser() user: LoginSucceedUserResponseDto, @Param("id", ParseIntPipe) id: number) {
+    return this.travelNotesService.delete(user.user_id, id);
   }
 }

@@ -8,6 +8,7 @@ import { UserEntity } from "src/modules/users/entities/user.entity";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
 import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
 import { UpdateAdminInfoRequestBodyDto } from "../dtos/req/update-admin-info-request-body.dto";
+import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @Controller("admins")
 @ApiTags("백오피스 API - 관리자")
@@ -50,8 +51,8 @@ export class BackOfficeAdminController {
   @ApiNoContentResponse({ description: "관리자 탈퇴 성공" })
   @ApiOperation({ summary: "관리자 회원 탈퇴" })
   @Delete()
-  deleteAdmin(@SignInUser() adminUser: UserEntity) {
+  deleteAdmin(@SignInUser() adminUser: LoginSucceedUserResponseDto) {
     // 탈퇴처리된 유저는 유저데이터로우 삭제
-    return this.backOfficeAdminService.deleteAdmin(adminUser.id);
+    return this.backOfficeAdminService.deleteAdmin(adminUser.user_id);
   }
 }
