@@ -3,17 +3,13 @@ import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
 import { TAKE_20_PER_PAGE } from "src/commons/constants/pagination.constant";
 import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
-import { UserEntity } from "src/modules/users/entities/user.entity";
 import { UpdateAdminInfoDto } from "../dtos/req/update-admin-info-request-body.dto";
-import { CreateAdminResponseDto } from "src/modules/back-office/dtos/res/create-admin-response.dto";
-import { GetAdminResponseDto } from "src/modules/back-office/dtos/res/get-admins-response.dto";
-import { UpdateAdminInfoResponseDto } from "src/modules/back-office/dtos/res/update-admin-info-response.dto";
 
 @Injectable()
 export class BackOfficeAdminService {
   constructor(private prismaService: PrismaService) {}
 
-  async createAdmin(dto: CreateAdminRequestBodyDto): Promise<CreateAdminResponseDto> {
+  async createAdmin(dto: CreateAdminRequestBodyDto) {
     const { name, account } = dto;
 
     const result = await this.prismaService.$transaction(async tx => {
@@ -43,15 +39,12 @@ export class BackOfficeAdminService {
       return newAdminUser;
     });
 
-    return {
-      admin_user_id: result.id,
-      name: result.name,
-    };
+    return result;
   }
 
-  async getAdmins(dto: GetAdminsRequestBodyDto): Promise<GetAdminResponseDto[]> {
+  async getAdmins(dto: GetAdminsRequestBodyDto) {
     const { cursor, name } = dto;
-    const admins = await this.prismaService.user.findMany({
+    const result = await this.prismaService.user.findMany({
       take: TAKE_20_PER_PAGE,
       cursor: {
         id: cursor ?? 1,
@@ -71,15 +64,9 @@ export class BackOfficeAdminService {
       },
     });
 
-    const result: GetAdminResponseDto[] = admins.map(({ id, name }) => {
-      return {
-        admin_user_id: id,
-        name: name,
-      };
-    });
     return result;
   }
-  async getAdminInfo(userId: number): Promise<GetAdminResponseDto> {
+  async getAdminInfo(userId: number) {
     const admin = await this.prismaService.user.findFirst({
       where: {
         id: userId,
@@ -88,13 +75,10 @@ export class BackOfficeAdminService {
     if (!admin) {
       throw new NotFoundException("존재하지 않은 관리자 회원입니다.");
     }
-    return {
-      admin_user_id: admin.id,
-      name: admin.name,
-    };
+    return admin;
   }
 
-  async updateAdminInfo(dto: UpdateAdminInfoDto): Promise<UpdateAdminInfoResponseDto> {
+  async updateAdminInfo(dto: UpdateAdminInfoDto) {
     const { userId, name } = dto;
     const result = await this.prismaService.$transaction(async tx => {
       const admin = await tx.user.findFirst({ where: { id: userId } });
@@ -113,10 +97,7 @@ export class BackOfficeAdminService {
 
       return updatedUser;
     });
-    return {
-      admin_user_id: result.id,
-      name: result.name,
-    };
+    return result;
   }
 
   async deleteAdmin(userId: number) {

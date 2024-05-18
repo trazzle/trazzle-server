@@ -1,4 +1,5 @@
-export class GetAdminResponseDto {
-  admin_user_id: number;
-  name: string;
+import { GetAdminInfoResponseDto } from "src/modules/back-office/dtos/res/get-admin-info-response.dto";
+
+export class GetAdminsResponseDto {
+  admins: GetAdminInfoResponseDto[];
 }
