@@ -22,11 +22,9 @@ import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { TravelNoteEntity } from "../entities/travel-note.entity";
-import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { isImageFile } from "src/util/file";
 import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
-@BearerAuth()
 @ApiTags("여행기")
 @UseGuards(JwtAuthGuard)
 @Controller()
