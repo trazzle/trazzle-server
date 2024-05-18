@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateUserDto } from "../dtos/req/update-user.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
-import { GetOneUserResponseDto } from "src/modules/users/dtos/res/get-one-user-response.dto";
 import { UpdateUserResponseDto } from "src/modules/users/dtos/res/update-user-response.dto";
 
 @Injectable()
@@ -12,20 +11,16 @@ export class UsersService {
     private readonly awsS3Service: AwsS3Service,
   ) {}
 
-  async getOneUser(userId: number): Promise<GetOneUserResponseDto> {
+  async getOneUser(userId: number) {
     const user = await this.prismaService.user.findFirst({
       where: {
         id: userId,
       },
     });
-    return {
-      name: user.name,
-      intro: user.intro,
-      profile_image: user.profileImageURL,
-    };
+    return user;
   }
 
-  async updateUser(dto: UpdateUserDto): Promise<UpdateUserResponseDto> {
+  async updateUser(dto: UpdateUserDto) {
     const { id, name, intro, profileImageFile } = dto;
 
     const result = await this.prismaService.$transaction(async transaction => {
@@ -74,11 +69,7 @@ export class UsersService {
       return updatedUser;
     });
 
-    return {
-      name: result.name,
-      intro: result.intro,
-      profile_image: result.profileImageURL,
-    };
+    return result;
   }
 
   deleteUser(userId: number) {

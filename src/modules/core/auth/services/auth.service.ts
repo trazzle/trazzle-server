@@ -6,8 +6,6 @@ import { CustomConfigService } from "src/modules/core/config/custom-config.servi
 import { RedisService } from "src/modules/core/redis/redis.service";
 import { PrismaService } from "../../database/prisma/prisma.service";
 import { UpdateAccessTokenRequestDto } from "src/modules/users/dtos/req/update-access-token-request.dto";
-import { UpdateAccessTokenResponseDto } from "src/modules/users/dtos/res/update-access-token-response.dto";
-import { LoginSucceedUserWithTokenResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -69,7 +67,7 @@ export class AuthService {
     }
   }
 
-  async updateAccessToken(dto: UpdateAccessTokenRequestDto): Promise<UpdateAccessTokenResponseDto> {
+  async updateAccessToken(dto: UpdateAccessTokenRequestDto) {
     const { refreshToken, userId, account } = dto;
     try {
       // userId와 account에 해당하는 유저가 있는지 확인
@@ -95,15 +93,13 @@ export class AuthService {
         account: account,
       });
 
-      return {
-        access_token: newAccessToken,
-      };
+      return newAccessToken;
     } catch (e) {
       throw e;
     }
   }
 
-  async signInAccount(account: string): Promise<LoginSucceedUserWithTokenResponseDto> {
+  async signInAccount(account: string) {
     const user = await this.prismaService.user.findFirst({
       where: { account },
     });
@@ -112,23 +108,20 @@ export class AuthService {
       throw new NotFoundException("존재하지 않는 회원입니다.");
     }
 
-    const access_token = await this.createAccessToken({
+    const accessToken = await this.createAccessToken({
       userId: user.id,
       account: account,
     });
 
-    const refresh_token = await this.createRefreshToken({
+    const refreshToken = await this.createRefreshToken({
       userId: user.id,
       account: account,
     });
 
     return {
-      user_id: user.id,
-      name: user.name,
-      profile_image: user.profileImageURL,
-      intro: user.intro,
-      access_token: access_token,
-      refresh_token: refresh_token,
+      ...user,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     };
   }
 }

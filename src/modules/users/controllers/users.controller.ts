@@ -23,8 +23,14 @@ import {
 } from "../dtos/req/sign-in-sign-up-request-body.dto";
 import { AuthHelper } from "src/modules/core/auth/helpers/auth.helper";
 import { UpdateAccessTokenRequestDto } from "../dtos/req/update-access-token-request.dto";
-import { LoginSucceedUserResponseDto } from "../dtos/res/login-succeed-user-response.dto";
+import {
+  LoginSucceedUserResponseDto,
+  LoginSucceedUserWithTokenResponseDto,
+} from "../dtos/res/login-succeed-user-response.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
+import { GetOneUserResponseDto } from "src/modules/users/dtos/res/get-one-user-response.dto";
+import { UpdateUserResponseDto } from "src/modules/users/dtos/res/update-user-response.dto";
+import { UpdateAccessTokenResponseDto } from "src/modules/users/dtos/res/update-access-token-response.dto";
 
 @Controller()
 export class UsersController {
@@ -40,8 +46,13 @@ export class UsersController {
   @Get()
   async myProfile(
     @SignInUser() user: LoginSucceedUserResponseDto, // login required
-  ) {
-    return await this.usersService.getOneUser(user.user_id);
+  ): Promise<GetOneUserResponseDto> {
+    const result = await this.usersService.getOneUser(user.user_id);
+    return {
+      name: result.name,
+      intro: result.intro,
+      profile_image: result.profileImageURL,
+    };
   }
 
   // 회원탈퇴
@@ -61,26 +72,55 @@ export class UsersController {
 
   // 소셜로그인
   @Post("sign-in/kakao")
-  async signInKakao(@Body() body: SignInOrSignUpKakaoRequestBodyDto) {
-    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
-    return loginUserInfo;
+  async signInKakao(@Body() body: SignInOrSignUpKakaoRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authHelperService.signingWithSocial(body);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
   @Post("sign-in/apple")
-  async signInApple(@Body() body: SignInOrSignUpAppleRequestBodyDto) {
-    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
-    return loginUserInfo;
+  async signInApple(@Body() body: SignInOrSignUpAppleRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authHelperService.signingWithSocial(body);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
   @Post("sign-in/google")
-  async signInGoogle(@Body() body: SignInOrSignUpGoogleRequestBodyDto) {
-    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
-    return loginUserInfo;
+  async signInGoogle(@Body() body: SignInOrSignUpGoogleRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authHelperService.signingWithSocial(body);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
   @Post("sign-in/account")
-  async signInAccount(@Query("account") account: string) {
-    return await this.authService.signInAccount(account);
+  async signInAccount(@Query("account") account: string): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authService.signInAccount(account);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
   // 회원정보 수정 - TBD : name / intro / profile 수정
@@ -91,7 +131,7 @@ export class UsersController {
     @SignInUser() user: LoginSucceedUserResponseDto,
     @Body() body: UpdateUserRequestBodyDto,
     @UploadedFile() file: Express.Multer.File,
-  ) {
+  ): Promise<UpdateUserResponseDto> {
     const { name, intro } = body;
     // if (!file) {
     //   // 수정이전 유저프로필 이미지
@@ -99,16 +139,22 @@ export class UsersController {
     //     await this.awsS3Service.getFileFromS3Bucket({ Key: `profiles/${user.profile_image}` });
     //   }
     // }
-    return this.usersService.updateUser({
+    const result = await this.usersService.updateUser({
       id: user.user_id,
       name: name ?? user.name,
       intro: intro ?? user.intro,
       profileImageFile: file ?? null,
     });
+
+    return {
+      name: result.name,
+      intro: result.intro,
+      profile_image: result.profileImageURL,
+    };
   }
 
   @Patch("token")
-  async updateAccessToken(@Body() body: UpdateAccessTokenRequestDto) {
+  async updateAccessToken(@Body() body: UpdateAccessTokenRequestDto): Promise<UpdateAccessTokenResponseDto> {
     const { refreshToken, userId, account } = body;
 
     // 리프래시토큰을 활용하여 액세스토큰을 갱신한다.
@@ -118,6 +164,8 @@ export class UsersController {
       account: account,
     });
 
-    return updatedNewAccessToken;
+    return {
+      access_token: updatedNewAccessToken,
+    };
   }
 }
