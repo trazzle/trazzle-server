@@ -6,8 +6,9 @@ export class LoginSucceedUserResponseDto {
 }
 
 /**
- * - 임시로그인()
- * - 소셜로그인()
+ * - 임시로그인
+ * - 소셜로그인
+ * - 관리자 로그인
  */
 export class LoginSucceedUserWithTokenResponseDto extends LoginSucceedUserResponseDto {
   access_token: string;

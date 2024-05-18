@@ -80,7 +80,7 @@ export class UsersController {
 
   @Post("sign-in/account")
   async signInAccount(@Query("account") account: string) {
-    return this.authService.signInAccount(account);
+    return await this.authService.signInAccount(account);
   }
 
   // 회원정보 수정 - TBD : name / intro / profile 수정
