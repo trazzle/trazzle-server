@@ -4,6 +4,7 @@ import { CustomConfigService } from "src/modules/core/config/custom-config.servi
 import { JwtService } from "@nestjs/jwt";
 import { RedisService } from "src/modules/core/redis/redis.service";
 import { CountriesService } from "src/modules/conuntries/service/countries.service";
+import { MagnetsService } from "src/modules/magnets/service/magnets.service";
 
 export const mockConfigService = {
   get: jest.fn(),
@@ -38,4 +39,8 @@ export const mockRedisService: MockClassType<RedisService> = {
 
 export const mockCountriesService: MockClassType<CountriesService> = {
   findAll: jest.fn(),
+};
+
+export const mockMagnetsService: MockClassType<MagnetsService> = {
+  list: jest.fn(),
 };
