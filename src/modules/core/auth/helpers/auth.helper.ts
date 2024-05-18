@@ -10,7 +10,6 @@ import JwksRsa, { SigningKey } from "jwks-rsa";
 import { PrismaService } from "../../database/prisma/prisma.service";
 import { firstValueFrom } from "rxjs";
 import { SocialLoginFailedException } from "src/errors/social-login-failed.exception";
-import { SocialLoginResponseDto } from "src/modules/users/dtos/res/social-login-response.dto";
 import { LoginSucceedUserWithTokenResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @Injectable()
