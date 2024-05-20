@@ -1,35 +1,65 @@
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { 테이블_초기화 } from "./common.fixture";
-import { Role } from "@prisma/client";
 import { INestApplication } from "@nestjs/common";
 import * as Supertest from "supertest";
-import { v4 } from "uuid";
+import { CreateAdminRequestBodyDto } from "src/modules/back-office/dtos/req/create-admin-request-body.dto";
+import { UpdateAdminInfoRequestBodyDto } from "src/modules/back-office/dtos/req/update-admin-info-request-body.dto";
+import { GetAdminsRequestQueryDto } from "src/modules/back-office/dtos/req/get-admins-request-query.dto";
 
 export const 관리자_초기화 = async (prismaService: PrismaService) => {
   return 테이블_초기화(prismaService, "User");
 };
 
-export const 관리자_생성 = async (prismaService: PrismaService, account: string, role: Role = Role.ADMIN) => {
-  const adminUser = await prismaService.user.findUnique({ where: { account } });
-  if (adminUser) {
-    return adminUser;
-  }
-  return prismaService.user.create({ data: { account, name: account, role } });
+export const 관리자_생성 = async (app: INestApplication, request: CreateAdminRequestBodyDto) => {
+  const response = await Supertest.agent(app.getHttpServer())
+    .post("/api/back-office/admins")
+    .set("Content-Type", "application.json")
+    .send(request);
+
+  return response;
 };
 
-export const 관리자_로그인 = async (app: INestApplication, account: string): Promise<string> => {
-  const response = await Supertest.agent(app.getHttpServer()).post("/api/users/sign-in/account").query({ account });
-  expect(response.status).toBe(201);
-  expect(response.body.access_token).toBeDefined();
-
-  return response.body.access_token;
-};
-
-export const 임의관리자_생성_로그인 = async (
+export const 관리자정보_수정 = async (
   app: INestApplication,
-  prismaService: PrismaService,
-  role: Role = Role.ADMIN,
+  accessToken: string,
+  request: UpdateAdminInfoRequestBodyDto,
 ) => {
-  const account = v4();
-  // TODO: 응답dto 구현후에 내부로직 작성예정
+  const response = await Supertest.agent(app.getHttpServer())
+    .patch("/api/back-office/admins")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Content-Type", "application/json")
+    .send(request);
+
+  return response;
+};
+
+export const 관리자_목록_조회 = async (
+  app: INestApplication,
+  accessToken: string,
+  request: GetAdminsRequestQueryDto,
+) => {
+  const response = await Supertest.agent(app.getHttpServer())
+    .get("/api/back-office/admins")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Content-Type", "application/json")
+    .query({ ...request });
+
+  return response;
+};
+
+export const 관리자_정보_조회 = async (app: INestApplication, accessToken: string, patient_id: number) => {
+  const response = await Supertest.agent(app.getHttpServer())
+    .get(`/api/back-office/admins/${patient_id}`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Content-Type", "application/json");
+  return response;
+};
+
+export const 관리자_삭제 = async (app: INestApplication, accessToken: string) => {
+  const response = await Supertest.agent(app.getHttpServer())
+    .delete("/api/back-office/admins")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Content-Type", "application/json");
+
+  return response;
 };
