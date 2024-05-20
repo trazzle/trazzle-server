@@ -1,7 +1,7 @@
 import { Transform } from "class-transformer";
 import { IsNumber, IsOptional } from "class-validator";
 
-export class GetAdminsRequestBodyDto {
+export class GetAdminsRequestQueryDto {
   @IsOptional()
   name?: string;
 

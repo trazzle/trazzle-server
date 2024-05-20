@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
 import { TAKE_20_PER_PAGE } from "src/commons/constants/pagination.constant";
-import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
+import { GetAdminsRequestQueryDto } from "src/modules/back-office/dtos/req/get-admins-request-query.dto";
 import { UpdateAdminInfoDto } from "../dtos/req/update-admin-info-request-body.dto";
 
 @Injectable()
@@ -42,7 +42,7 @@ export class BackOfficeAdminService {
     return result;
   }
 
-  async getAdmins(dto: GetAdminsRequestBodyDto) {
+  async getAdmins(dto: GetAdminsRequestQueryDto) {
     const { cursor, name } = dto;
     const result = await this.prismaService.user.findMany({
       take: TAKE_20_PER_PAGE,

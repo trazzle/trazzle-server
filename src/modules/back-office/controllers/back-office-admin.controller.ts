@@ -3,7 +3,7 @@ import { BackOfficeAdminService } from "src/modules/back-office/services/back-of
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
 import { AdminGuard } from "src/guards/admin-auth.guard";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
-import { GetAdminsRequestBodyDto } from "src/modules/back-office/dtos/req/get-admins-request-body.dto";
+import { GetAdminsRequestQueryDto } from "src/modules/back-office/dtos/req/get-admins-request-query.dto";
 import { UpdateAdminInfoRequestBodyDto } from "../dtos/req/update-admin-info-request-body.dto";
 import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 import { CreateAdminResponseDto } from "src/modules/back-office/dtos/res/create-admin-response.dto";
@@ -26,7 +26,7 @@ export class BackOfficeAdminController {
 
   @UseGuards(AdminGuard)
   @Get()
-  async getAdmins(@Query() dto: GetAdminsRequestBodyDto): Promise<GetAdminsResponseDto> {
+  async getAdmins(@Query() dto: GetAdminsRequestQueryDto): Promise<GetAdminsResponseDto> {
     const admins = await this.backOfficeAdminService.getAdmins(dto);
     const result: GetAdminInfoResponseDto[] = admins.map(admin => {
       return { admin_user_id: admin.id, name: admin.name };
