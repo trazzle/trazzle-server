@@ -9,7 +9,6 @@ import { OAuth2Client, TokenInfo } from "google-auth-library";
 import JwksRsa, { SigningKey } from "jwks-rsa";
 import { PrismaService } from "../../database/prisma/prisma.service";
 import { firstValueFrom } from "rxjs";
-import { SocialLoginResponseDto } from "src/modules/users/dtos/res/social-login-response.dto";
 import { SocialLoginFailedException } from "src/errors/social-login-failed.exception";
 
 @Injectable()
@@ -24,7 +23,7 @@ export class AuthHelper {
     private readonly googleOAuthClient: OAuth2Client,
   ) {}
 
-  async signingWithSocial(dto: SignInOrSignUpRequestBodyDto): Promise<SocialLoginResponseDto> {
+  async signingWithSocial(dto: SignInOrSignUpRequestBodyDto) {
     try {
       const { oauthProvider, accessToken } = dto;
       let account, name, profileImageURL;
@@ -121,25 +120,21 @@ export class AuthHelper {
       }
 
       // 레디스에 액세스 토큰 등록
-      const access_token = await this.authService.createAccessToken({
+      const _accessToken = await this.authService.createAccessToken({
         userId: user.id,
         account: account,
       });
 
       // 레디스에 리프래시 토큰 등록
-      const refresh_token = await this.authService.createRefreshToken({
+      const _refreshToken = await this.authService.createRefreshToken({
         userId: user.id,
         account: account,
       });
 
       return {
-        id: user.id,
-        name: user.name,
-        account: user.account,
-        profileImageURL: user.profileImageURL,
-        intro: user.intro,
-        access_token: access_token,
-        refresh_token: refresh_token,
+        ...user,
+        accessToken: _accessToken,
+        refreshToken: _refreshToken,
       };
     } catch (e) {
       if (e instanceof UnauthorizedException) {

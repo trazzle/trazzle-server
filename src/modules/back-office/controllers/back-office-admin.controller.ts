@@ -1,50 +1,66 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { BackOfficeAdminService } from "src/modules/back-office/services/back-office-admin.service";
 import { CreateAdminRequestBodyDto } from "../dtos/req/create-admin-request-body.dto";
 import { AdminGuard } from "src/guards/admin-auth.guard";
-import { AdminBearerAuth } from "src/decorators/admin-auth.decorator";
+import { SignInUser } from "src/decorators/sign-in-user.decorator";
+import { GetAdminsRequestQueryDto } from "src/modules/back-office/dtos/req/get-admins-request-query.dto";
+import { UpdateAdminInfoRequestBodyDto } from "../dtos/req/update-admin-info-request-body.dto";
+import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
+import { CreateAdminResponseDto } from "src/modules/back-office/dtos/res/create-admin-response.dto";
+import { GetAdminsResponseDto } from "src/modules/back-office/dtos/res/get-admins-response.dto";
+import { GetAdminInfoResponseDto } from "src/modules/back-office/dtos/res/get-admin-info-response.dto";
+import { UpdateAdminInfoResponseDto } from "src/modules/back-office/dtos/res/update-admin-info-response.dto";
 
 @Controller("admins")
-@ApiTags("백오피스 API - 관리자")
 export class BackOfficeAdminController {
   constructor(private readonly backOfficeAdminService: BackOfficeAdminService) {}
 
-  @ApiOperation({ summary: "신규 관리자 회원 생성" })
   @Post()
-  createAdmin(@Body() body: CreateAdminRequestBodyDto) {
-    return this.backOfficeAdminService.createAdmin(body);
+  async createAdmin(@Body() body: CreateAdminRequestBodyDto): Promise<CreateAdminResponseDto> {
+    const newAdmin = await this.backOfficeAdminService.createAdmin(body);
+    return {
+      admin_user_id: newAdmin.id,
+      name: newAdmin.name,
+    };
   }
 
-  @AdminBearerAuth(AdminGuard)
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: "신규 관리자 회원 목록 조회" })
   @Get()
-  getAdmins() {
-    return "getAdmins";
+  async getAdmins(@Query() dto: GetAdminsRequestQueryDto): Promise<GetAdminsResponseDto> {
+    const admins = await this.backOfficeAdminService.getAdmins(dto);
+    const result: GetAdminInfoResponseDto[] = admins.map(admin => {
+      return { admin_user_id: admin.id, name: admin.name };
+    });
+    return { admins: result };
   }
 
-  @AdminBearerAuth(AdminGuard)
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: "신규 관리자 회원 단건 조회" })
   @Get(":id")
-  getAdminInfo(@Param("id", ParseIntPipe) id: number) {
-    return "getAdminInfo" + id;
+  async getAdminInfo(@Param("id", ParseIntPipe) id: number): Promise<GetAdminInfoResponseDto> {
+    const adminInfo = await this.backOfficeAdminService.getAdminInfo(id);
+    return {
+      admin_user_id: adminInfo.id,
+      name: adminInfo.name,
+    };
   }
 
-  @AdminBearerAuth(AdminGuard)
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: "관리자 회원 정보 수정" })
   @Patch()
-  updateAdminInfo() {
-    return "updateAdminInfo";
+  async updateAdminInfo(
+    @Body() body: UpdateAdminInfoRequestBodyDto,
+    @SignInUser() adminUser: LoginSucceedUserResponseDto,
+  ): Promise<UpdateAdminInfoResponseDto> {
+    const updateAdminInfo = await this.backOfficeAdminService.updateAdminInfo({ userId: adminUser.user_id, ...body });
+    return {
+      admin_user_id: updateAdminInfo.id,
+      name: updateAdminInfo.name,
+    };
   }
 
-  @AdminBearerAuth(AdminGuard)
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: "관리자 회원 탈퇴" })
   @Delete()
-  deleteAdmin() {
-    return "deleteAdmin";
+  deleteAdmin(@SignInUser() adminUser: LoginSucceedUserResponseDto) {
+    // 탈퇴처리된 유저는 유저데이터로우 삭제
+    return this.backOfficeAdminService.deleteAdmin(adminUser.user_id);
   }
 }

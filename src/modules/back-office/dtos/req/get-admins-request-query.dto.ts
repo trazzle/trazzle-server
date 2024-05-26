@@ -1,13 +1,8 @@
 import { Transform } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional } from "class-validator";
 
-export class SearchCityDto {
+export class GetAdminsRequestQueryDto {
   @IsOptional()
-  @IsString()
-  countryCode?: string;
-
-  @IsOptional()
-  @IsString()
   name?: string;
 
   @IsOptional()

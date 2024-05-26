@@ -18,93 +18,16 @@ import { CreateTravelNoteDto } from "src/modules/travel-notes/dtos/req/create-tr
 import { TravelNotesService } from "src/modules/travel-notes/service/travel-notes.service";
 import { UpdateTravelNoteDto } from "src/modules/travel-notes/dtos/req/update-travel-note.dto";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
-import { UserEntity } from "src/modules/users/entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
-import { TravelNoteEntity } from "../entities/travel-note.entity";
-import { BearerAuth } from "src/decorators/bearer-auth.decorator";
 import { isImageFile } from "src/util/file";
+import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
-@BearerAuth()
-@ApiTags("여행기")
 @UseGuards(JwtAuthGuard)
 @Controller()
 export class TravelNotesController {
   constructor(private readonly travelNotesService: TravelNotesService) {}
 
-  @ApiConsumes("multipart/form-data")
-  @ApiOperation({ summary: "여행기 생성" })
-  @ApiOkResponse({ description: "신규 여행기록", type: TravelNoteEntity })
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        image1: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지1",
-        },
-        image2: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지2",
-        },
-        image3: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지3",
-        },
-        image4: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지4",
-        },
-        image5: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지5",
-        },
-        image6: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지6",
-        },
-        startDate: {
-          type: "string",
-          example: "2024-03-20",
-          description: "여행 시작일",
-        },
-        endDate: {
-          type: "string",
-          example: "2024-03-25",
-          description: "여행 종료일",
-        },
-        title: {
-          type: "string",
-          example: "서울여행",
-          description: "여행기 제목",
-        },
-        review: {
-          type: "string",
-          example: "서울여행 재밌다.",
-          description: "여행기 내용",
-        },
-        cityId: { type: "number", example: "1", description: "도시 ID" },
-        cityName: {
-          type: "string",
-          example: "서울",
-          description: "도시명(도시ID가 없을 경우에만 입력 -> 기타도시 선택시)",
-        },
-        mainImageIndex: {
-          type: "number",
-          example: 1,
-          description: "메인 이미지 인덱스 (1 - 6)",
-        },
-      },
-      required: ["startDate", "endDate", "title", "mainImageIndex"],
-    },
-  })
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -117,7 +40,7 @@ export class TravelNotesController {
     ]),
   )
   async create(
-    @SignInUser() user: UserEntity,
+    @SignInUser() user: LoginSucceedUserResponseDto,
     @Body() body: CreateTravelNoteDto,
     @UploadedFiles()
     files: {
@@ -142,114 +65,20 @@ export class TravelNotesController {
       throw new BadRequestException("이미지 파일만 업로드 가능합니다.");
     }
 
-    return await this.travelNotesService.create(user.id, body, images);
+    return await this.travelNotesService.create(user.user_id, body, images);
   }
 
-  @ApiOperation({
-    summary: "여행기 목록 조회",
-    description: "조회 대상 사용자의 여행기 목록 조회",
-  })
-  @ApiOkResponse({ type: TravelNoteEntity, isArray: true })
   @Get()
   async list(@Req() request: Request, @Query("userId", ParseIntPipe) userId: string) {
     const newVar = await this.travelNotesService.list(Number(userId));
     return newVar;
   }
 
-  @ApiOperation({ summary: "여행기 단건 조회" })
-  @ApiParam({
-    name: "id",
-    required: true,
-    type: "number",
-    description: "여행기 고유번호 PK",
-    example: 1,
-  })
-  @ApiOkResponse({
-    type: TravelNoteEntity,
-    description: "id에 부합하는 단건 조회",
-  })
   @Get(":id")
   async getOneTravelNote(@Param("id", ParseIntPipe) id: number) {
     return this.travelNotesService.getOne(id);
   }
 
-  @ApiOperation({ summary: "여행기 수정" })
-  @ApiConsumes("multipart/form-data")
-  @ApiParam({
-    name: "id",
-    required: true,
-    description: "여행기ID",
-    type: String,
-  })
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        image1: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지1",
-        },
-        image2: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지2",
-        },
-        image3: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지3",
-        },
-        image4: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지4",
-        },
-        image5: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지5",
-        },
-        image6: {
-          type: "file",
-          format: "binary",
-          description: "여행기 이미지6",
-        },
-        startDate: {
-          type: "string",
-          example: "2024-03-20",
-          description: "여행 시작일",
-        },
-        endDate: {
-          type: "string",
-          example: "2024-03-25",
-          description: "여행 종료일",
-        },
-        title: {
-          type: "string",
-          example: "서울여행",
-          description: "여행기 제목",
-        },
-        review: {
-          type: "string",
-          example: "서울여행 재밌다.",
-          description: "여행기 내용",
-        },
-        cityId: { type: "number", example: "1", description: "도시 ID" },
-        cityName: {
-          type: "string",
-          example: "서울",
-          description: "도시명(도시ID가 없을 경우에만 입력 -> 기타도시 선택시)",
-        },
-        mainImageIndex: {
-          type: "number",
-          example: 1,
-          description: "메인 이미지 인덱스 (1 - 6)",
-        },
-      },
-      required: ["startDate", "endDate", "title", "mainImageIndex"],
-    },
-  })
   @Put(":id")
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -262,7 +91,7 @@ export class TravelNotesController {
     ]),
   )
   async update(
-    @SignInUser() user: UserEntity,
+    @SignInUser() user: LoginSucceedUserResponseDto,
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateTravelNoteDto,
     @UploadedFiles()
@@ -288,20 +117,11 @@ export class TravelNotesController {
       throw new BadRequestException("이미지 파일만 업로드 가능합니다.");
     }
 
-    return this.travelNotesService.update(user.id, id, body, images);
+    return this.travelNotesService.update(user.user_id, id, body, images);
   }
 
-  @ApiConsumes("application/json")
-  @ApiOperation({ summary: "여행기 삭제" })
-  @ApiParam({
-    name: "id",
-    required: true,
-    type: "number",
-    description: "여행기 고유번호 PK",
-    example: 1,
-  })
   @Delete(":id")
-  async delete(@SignInUser() user: UserEntity, @Param("id", ParseIntPipe) id: number) {
-    return this.travelNotesService.delete(user.id, id);
+  async delete(@SignInUser() user: LoginSucceedUserResponseDto, @Param("id", ParseIntPipe) id: number) {
+    return this.travelNotesService.delete(user.user_id, id);
   }
 }

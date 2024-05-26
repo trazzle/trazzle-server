@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateUserDto } from "../dtos/req/create-user.dto";
 import { UpdateUserDto } from "../dtos/req/update-user.dto";
 import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
 import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
@@ -12,7 +11,7 @@ export class UsersService {
   ) {}
 
   async getOneUser(userId: number) {
-    const user = this.prismaService.user.findFirst({
+    const user = await this.prismaService.user.findFirst({
       where: {
         id: userId,
       },
@@ -20,19 +19,10 @@ export class UsersService {
     return user;
   }
 
-  createUser(dto: CreateUserDto) {
-    const newUser = this.prismaService.user.create({
-      data: {
-        ...dto,
-      },
-    });
-    return newUser;
-  }
-
   async updateUser(dto: UpdateUserDto) {
     const { id, name, intro, profileImageFile } = dto;
 
-    this.prismaService.$transaction(async transaction => {
+    const result = await this.prismaService.$transaction(async transaction => {
       // 1. 유저정보 유무 확인
       const user = await transaction.user.findFirst({ where: { id: id } });
       if (!user) {
@@ -63,7 +53,7 @@ export class UsersService {
         if (user.profileImageURL) {
           // 기존의 이미지와 디렉토리를 지운다
           await this.awsS3Service.deleteImageFromS3Bucket({
-            Key: `profiles/${id}`,
+            Key: `profiles/${id}/`,
           });
 
           // 4-2. s3에 새로운 프로필이미지로 업데이트한다.
@@ -77,12 +67,15 @@ export class UsersService {
 
       return updatedUser;
     });
+
+    return result;
   }
 
   deleteUser(userId: number) {
     const deletedUser = this.prismaService.user.delete({
       where: { id: userId },
     });
+    // S3버킷도 삭제된다.
     return deletedUser;
   }
 }

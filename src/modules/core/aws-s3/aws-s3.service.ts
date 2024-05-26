@@ -1,6 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { CustomConfigService } from "../config/custom-config.service";
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { deleteObjectCommandDto, getObjectCommandDto, putObjectCommandDto } from "./dtos/s3-command.dto";
 import ENV_KEY from "../config/constants/env-config.constant";
 import { Readable } from "stream";
@@ -83,4 +89,21 @@ export class AwsS3Service {
     const Key = url.replace(this.AWS_HOST + "/", "");
     await this.deleteImageFromS3Bucket({ Key });
   }
+
+  /**
+   *
+   * 여러개 이미지 삭제 & 디렉토리 삭제
+   */
+  async DeleteObjectsCommand(key: string) {
+    const deleteObjectsCommand = new DeleteObjectsCommand({
+      Bucket: this.AWS_S3_BUCKET_NAME,
+      Delete: {
+        Objects: []
+      }
+    });
+
+    await this.s3Client.send(deleteObjectsCommand);
+  }
+
+  /** 디렉토리 안에 있는 이미지들 갖고오기 */
 }

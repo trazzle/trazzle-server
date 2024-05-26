@@ -8,6 +8,7 @@ import { PrismaService } from "src/modules/core/database/prisma/prisma.service";
 import { RedisService } from "src/modules/core/redis/redis.service";
 import JwtPayload from "./trazzle-jwt.payload";
 import { AccessTokenExpiredException } from "src/errors/access-token-expired.error";
+import { LoginSucceedUserResponseDto } from "src/modules/users/dtos/res/login-succeed-user-response.dto";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<LoginSucceedUserResponseDto> {
     const { userId, account } = payload;
     try {
       // redis에 토큰이 존재하여 캐시히트인지 확인
@@ -43,7 +44,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new NotFoundException("존재하지 않은 유저입니다.");
       }
 
-      return user;
+      return {
+        user_id: user.id,
+        name: user.name,
+        intro: user.intro,
+        profile_image: user.profileImageURL,
+      };
     } catch (e) {
       if (e instanceof UnauthorizedException && e.message === "액세스 토큰이 만료하였습니다.") {
         throw new AccessTokenExpiredException();

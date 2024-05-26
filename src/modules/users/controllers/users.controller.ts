@@ -13,145 +13,148 @@ import {
 import { UsersService } from "../services/users.service";
 import { UpdateUserRequestBodyDto } from "../dtos/req/update-user-request-body.dto";
 import { SignInUser } from "src/decorators/sign-in-user.decorator";
-import { UserEntity } from "../entities/user.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { AuthService } from "src/modules/core/auth/services/auth.service";
-import { ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   SignInOrSignUpAppleRequestBodyDto,
   SignInOrSignUpGoogleRequestBodyDto,
   SignInOrSignUpKakaoRequestBodyDto,
 } from "../dtos/req/sign-in-sign-up-request-body.dto";
-import { BearerAuth } from "src/decorators/bearer-auth.decorator";
-import { SocialLoginResponseDto } from "../dtos/res/social-login-response.dto";
 import { AuthHelper } from "src/modules/core/auth/helpers/auth.helper";
 import { UpdateAccessTokenRequestDto } from "../dtos/req/update-access-token-request.dto";
-import { UpdateAccessTokenResponseDto } from "../dtos/res/update-access-token-response.dto";
+import {
+  LoginSucceedUserResponseDto,
+  LoginSucceedUserWithTokenResponseDto,
+} from "../dtos/res/login-succeed-user-response.dto";
+import { AwsS3Service } from "src/modules/core/aws-s3/aws-s3.service";
+import { GetOneUserResponseDto } from "src/modules/users/dtos/res/get-one-user-response.dto";
+import { UpdateUserResponseDto } from "src/modules/users/dtos/res/update-user-response.dto";
+import { UpdateAccessTokenResponseDto } from "src/modules/users/dtos/res/update-access-token-response.dto";
 
-@ApiTags("사용자 & 로그인")
 @Controller()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authHelperService: AuthHelper,
     private readonly authService: AuthService,
+    private readonly awsS3Service: AwsS3Service,
   ) {}
 
   // 로그인한 회원정보 조회
-  @ApiOperation({ summary: "로그인한 회원의 정보 조회" })
-  @BearerAuth(JwtAuthGuard)
-  @ApiOkResponse({ description: "현재 로그인 유저정보", type: UserEntity })
   @UseGuards(JwtAuthGuard)
   @Get()
   async myProfile(
-    @SignInUser() user: UserEntity, // login required
-  ) {
-    return await this.usersService.getOneUser(user.id);
+    @SignInUser() user: LoginSucceedUserResponseDto, // login required
+  ): Promise<GetOneUserResponseDto> {
+    const result = await this.usersService.getOneUser(user.user_id);
+    return {
+      name: result.name,
+      intro: result.intro,
+      profile_image: result.profileImageURL,
+    };
   }
 
   // 회원탈퇴
-  @BearerAuth(JwtAuthGuard)
-  @ApiOperation({
-    summary: "회원탈퇴",
-  })
-  @ApiOkResponse({ description: "탈퇴한 유저정보", type: UserEntity })
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async withdrawUser(@SignInUser() user: UserEntity) {
+  async withdrawUser(@SignInUser() user: LoginSucceedUserResponseDto) {
     // 탈퇴처리된 유저는 DB에 해당 데이터로우 삭제
-    return await this.usersService.deleteUser(user.id);
+    return await this.usersService.deleteUser(user.user_id);
   }
 
   // 로그아웃
-  @ApiOperation({ summary: "로그아웃" })
-  @BearerAuth(JwtAuthGuard)
-  @ApiOkResponse({ description: "액세스 토큰 삭제" })
   @UseGuards(JwtAuthGuard)
   @Get("sign-out")
-  async signOut(@SignInUser() user: UserEntity) {
-    return await this.authService.signOut(user.id);
+  async signOut(@SignInUser() user: LoginSucceedUserResponseDto) {
+    return await this.authService.signOut(user.user_id);
   }
 
   // 소셜로그인
-  @ApiOperation({
-    summary: "카카오 연동 로그인",
-  })
-  @ApiOkResponse({
-    description: "카카오 연동 로그인 유저정보",
-    type: SocialLoginResponseDto,
-  })
   @Post("sign-in/kakao")
-  async signInKakao(@Body() body: SignInOrSignUpKakaoRequestBodyDto) {
-    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
-    return loginUserInfo;
+  async signInKakao(@Body() body: SignInOrSignUpKakaoRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authHelperService.signingWithSocial(body);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
-  @ApiOperation({
-    summary: "애플 연동 로그인",
-  })
-  @ApiOkResponse({
-    description: "애플 연동 로그인 유저정보",
-    type: SignInOrSignUpAppleRequestBodyDto,
-  })
   @Post("sign-in/apple")
-  async signInApple(@Body() body: SignInOrSignUpAppleRequestBodyDto) {
-    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
-    return loginUserInfo;
+  async signInApple(@Body() body: SignInOrSignUpAppleRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authHelperService.signingWithSocial(body);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
-  @ApiOperation({
-    summary: "구글 연동 로그인",
-  })
-  @ApiOkResponse({
-    description: "구글 연동 로그인 유저정보",
-    type: SocialLoginResponseDto,
-  })
   @Post("sign-in/google")
-  async signInGoogle(@Body() body: SignInOrSignUpGoogleRequestBodyDto) {
-    const loginUserInfo = await this.authHelperService.signingWithSocial(body);
-    return loginUserInfo;
+  async signInGoogle(@Body() body: SignInOrSignUpGoogleRequestBodyDto): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authHelperService.signingWithSocial(body);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
-  @ApiTags("로그인 (테스트용)")
   @Post("sign-in/account")
-  async signInAccount(@Query("account") account: string) {
-    return this.authService.signInAccount(account);
+  async signInAccount(@Query("account") account: string): Promise<LoginSucceedUserWithTokenResponseDto> {
+    const user = await this.authService.signInAccount(account);
+    return {
+      user_id: user.id,
+      name: user.name,
+      profile_image: user.profileImageURL,
+      intro: user.intro,
+      access_token: user.accessToken,
+      refresh_token: user.refreshToken,
+    };
   }
 
   // 회원정보 수정 - TBD : name / intro / profile 수정
-  @ApiConsumes("multipart/form")
-  @BearerAuth(JwtAuthGuard)
-  @ApiOperation({ summary: "유저정보 수정" })
-  @ApiOkResponse({
-    description: "유저명 / 프로필이미지 / 소개글 수정",
-    type: UserEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor("file"))
-  @ApiBody({
-    description: "유저정보 수정",
-    type: UpdateUserRequestBodyDto,
-  })
   @Patch("profile")
   async updateUser(
-    @SignInUser() user: UserEntity,
+    @SignInUser() user: LoginSucceedUserResponseDto,
     @Body() body: UpdateUserRequestBodyDto,
     @UploadedFile() file: Express.Multer.File,
-  ) {
+  ): Promise<UpdateUserResponseDto> {
     const { name, intro } = body;
-    return await this.usersService.updateUser({
-      id: user.id,
-      name: name,
-      intro: intro,
-      profileImageFile: file,
+    // if (!file) {
+    //   // 수정이전 유저프로필 이미지
+    //   if (user.profile_image) {
+    //     await this.awsS3Service.getFileFromS3Bucket({ Key: `profiles/${user.profile_image}` });
+    //   }
+    // }
+    const result = await this.usersService.updateUser({
+      id: user.user_id,
+      name: name ?? user.name,
+      intro: intro ?? user.intro,
+      profileImageFile: file ?? null,
     });
+
+    return {
+      name: result.name,
+      intro: result.intro,
+      profile_image: result.profileImageURL,
+    };
   }
 
-  @ApiTags("액세스 토큰 갱신")
-  @ApiOkResponse({ description: "액세스토큰 갱신 정상응답값", type: UpdateAccessTokenResponseDto })
   @Patch("token")
-  async updateAccessToken(@Body() body: UpdateAccessTokenRequestDto) {
+  async updateAccessToken(@Body() body: UpdateAccessTokenRequestDto): Promise<UpdateAccessTokenResponseDto> {
     const { refreshToken, userId, account } = body;
 
     // 리프래시토큰을 활용하여 액세스토큰을 갱신한다.
@@ -161,6 +164,8 @@ export class UsersController {
       account: account,
     });
 
-    return updatedNewAccessToken;
+    return {
+      access_token: updatedNewAccessToken,
+    };
   }
 }
