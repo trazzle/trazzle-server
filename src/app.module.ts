@@ -11,10 +11,16 @@ import { CitiesModule } from "src/modules/cities/cities.module";
 import { MagnetsModule } from "./modules/magnets/magnets.module";
 import { TermsModule } from "./modules/terms/terms.module";
 import { BackOfficeModule } from "src/modules/back-office/back-office.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
+import { path } from "app-root-path";
 
 @Module({
   imports: [
     ...MainModules,
+    ServeStaticModule.forRoot({
+      rootPath: join(path, "public"),
+    }),
     RouterModule.register([
       { path: "/api/users", module: UsersModule },
       { path: "/api/travel-notes", module: TravelNotesModule },

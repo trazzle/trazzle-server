@@ -18,6 +18,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand"
   },
   "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "@aws-sdk/client-s3": "^3.537.0",
     "@js-joda/core": "^5.6.2",
     "@js-joda/timezone": "^2.18.3",
@@ -31,6 +32,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.1",
+    "@nestjs/serve-static": "^4.0.2",
     "@prisma/client": "^5.11.0",
     "app-root-path": "^3.1.0",
     "aws-sdk": "^2.1583.0",
@@ -39,6 +41,7 @@
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "express-openapi-validator": "^5.1.6",
     "google-auth-library": "^9.7.0",
     "helmet": "^7.1.0",
     "joi": "^17.12.2",
@@ -54,7 +57,8 @@
     "rxjs": "^7.8.1",
     "uuid": "^9.0.1",
     "winston": "^3.13.0",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^10.6.0",
