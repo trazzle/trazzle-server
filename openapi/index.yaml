@@ -2,65 +2,16 @@ openapi: 3.0.0
 info:
   title: Trazzle API
   description: 트래즐 서비스 API
-  version: 1.0.0
+  version: '1.0.0'
   contact:
     name: 서동성
     email: sds901234@naver.com
 tags: []
 servers: []
+
 paths:
   /api/users:
-    get:
-      operationId: UsersController_myProfile
-      summary: 로그인한 회원의 정보 조회
-      tags:
-        - 사용자 & 로그인
-      responses:
-        "200":
-          description: 현재 로그인 유저정보
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: number
-                    description: 유저 PK
-                    example: 1
-                  name:
-                    type: string
-                    description: 유저이름
-                    example: 최은강
-                  account:
-                    type: string
-                    description: 유저계정
-                  intro:
-                    type: string
-                    description: 유저 소개글
-                    example: Trazzle로 세계정복!
-                  profileImageURL:
-                    type: string
-                    description: 유저 프로필 이미지
-                  role:
-                    type: string
-                    description: 유저 권한
-                required:
-                  - id
-                  - name
-                  - account
-                  - intro
-                  - profileImageURL
-                  - role
-        "401":
-          description: ""
-          content:
-            application/json:
-              schema:
-                example:
-                  status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
-                  errors:
-                    - message: 액세스 토큰이 유효하지 않습니다.
+    $ref: './paths/users/index.yaml'
   /api/users/sign-out:
     get:
       operationId: UsersController_signOut
@@ -73,18 +24,19 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: 액세스 토큰 삭제
-        "401":
-          description: ""
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
+
       security:
         - bearer: []
   /api/users/sign-in/kakao:
@@ -96,67 +48,16 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a20
-              type: object
-              properties:
-                accessToken:
-                  type: string
-                  description: OAuth Access Token
-                  example: "{{카카오 액세스토큰}}"
-                oauthProvider:
-                  type: string
-                  description: "소셜/로그인타입 - 카카오: k"
-                  example: k
-                  enum:
-                    - k
-                    - g
-                    - a
-              required:
-                - accessToken
-                - oauthProvider
+            schema:
+              $ref: '#/components/schemas/SignInOrSignUpKakaoRequestBodyDto'
       responses:
-        "200":
+        '200':
           description: 카카오 연동 로그인 유저정보
           content:
             application/json:
-              schema: &a2
-                type: object
-                properties:
-                  id:
-                    type: number
-                    description: Trazzle 서버 유저고유 PK
-                    example: 2
-                  access_token:
-                    type: string
-                    description: Trazzle 서비스 유저 액세스토큰 (24h)
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImFjY291bnQiOiJrLWNobGRtc3JrZCIsImlhdCI6MTcxMTc5MTU2MCwiZXhwIjoxNzExODc3OTYwfQ.qNeh3LJTjMsNitv8wU76EdqjRzScyQdZfWodm1SPcSM
-                  refresh_token:
-                    type: string
-                    description: Trazzle 서비스 유저 리프래시 토큰 (1y)
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImFjY291bnQiOiJrLWNobGRtc3JrZCIsImlhdCI6MTcxMTc5MTU2MCwiZXhwIjoxNzExODc3OTYwfQ.qNeh3LJTjMsNitv8wU76EdqjRzScyQdZfWodm1SPcSM
-                  name:
-                    type: string
-                    description: 유저이름
-                    example: 서동성
-                  account:
-                    type: string
-                    description: "소셜연동 유저 계정 고유값(k :카카오/ g: 구글 / a : 애플)"
-                    example: k-12345
-                  profileImageURL:
-                    type: string
-                    description: "{{프로필 이미지 S3 URL}}"
-                  intro:
-                    type: string
-                    description: 소개글
-                    example: Let's Trazzle!
-                required:
-                  - id
-                  - access_token
-                  - refresh_token
-                  - name
-                  - account
-                  - profileImageURL
-                  - intro
+              schema:
+                $ref: '#/components/schemas/SocialLoginResponseDto'
+
   /api/users/sign-in/apple:
     post:
       operationId: UsersController_signInApple
@@ -166,30 +67,16 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a1
-              type: object
-              properties:
-                accessToken:
-                  type: string
-                  description: OAuth Access Token
-                  example: "{{애플 액세스토큰}}"
-                oauthProvider:
-                  type: string
-                  description: "소셜/로그인타입 - 애플: a"
-                  example: a
-                  enum:
-                    - k
-                    - g
-                    - a
-              required:
-                - accessToken
-                - oauthProvider
+            schema:
+              $ref: '#/components/schemas/SignInOrSignUpAppleRequestBodyDto'
       responses:
-        "200":
+        '200':
           description: 애플 연동 로그인 유저정보
           content:
             application/json:
-              schema: *a1
+              schema:
+                $ref: '#/components/schemas/SignInOrSignUpAppleRequestBodyDto'
+
   /api/users/sign-in/google:
     post:
       operationId: UsersController_signInGoogle
@@ -199,30 +86,16 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a21
-              type: object
-              properties:
-                accessToken:
-                  type: string
-                  description: OAuth Access Token
-                  example: "{{구글 액세스토큰}}"
-                oauthProvider:
-                  type: string
-                  description: "소셜/로그인타입 - 구글: g"
-                  example: g
-                  enum:
-                    - k
-                    - g
-                    - a
-              required:
-                - accessToken
-                - oauthProvider
+            schema:
+              $ref: '#/components/schemas/SignInOrSignUpGoogleRequestBodyDto'
       responses:
-        "200":
+        '200':
           description: 구글 연동 로그인 유저정보
           content:
             application/json:
-              schema: *a2
+              schema:
+                $ref: '#/components/schemas/SocialLoginResponseDto'
+
   /api/users/sign-in/account:
     post:
       operationId: UsersController_signInAccount
@@ -233,8 +106,8 @@ paths:
           schema:
             type: string
       responses:
-        "201":
-          description: ""
+        '201':
+          description: ''
       tags:
         - 사용자 & 로그인
         - 로그인 (테스트용)
@@ -254,70 +127,26 @@ paths:
         description: 유저정보 수정
         content:
           multipart/form:
-            schema: &a22
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 수정할 유저명
-                  example: 이름수정
-                intro:
-                  type: string
-                  description: 수정할 유저 소개글
-                  example: 소개글수정
-                profileImageFile:
-                  type: object
-                  description: 수정할 프로필 이미지
-              required:
-                - name
-                - intro
-                - profileImageFile
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequestBodyDto'
       responses:
-        "200":
+        '200':
           description: 유저명 / 프로필이미지 / 소개글 수정
           content:
             application/json:
-              schema: &a19
-                type: object
-                properties:
-                  id:
-                    type: number
-                    description: 유저 PK
-                    example: 1
-                  name:
-                    type: string
-                    description: 유저이름
-                    example: 최은강
-                  account:
-                    type: string
-                    description: 유저계정
-                  intro:
-                    type: string
-                    description: 유저 소개글
-                    example: Trazzle로 세계정복!
-                  profileImageURL:
-                    type: string
-                    description: 유저 프로필 이미지
-                  role:
-                    type: string
-                    description: 유저 권한
-                required:
-                  - id
-                  - name
-                  - account
-                  - intro
-                  - profileImageURL
-                  - role
-        "401":
-          description: ""
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
+
       security:
         - bearer: []
   /api/users/token:
@@ -328,38 +157,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a23
-              type: object
-              properties:
-                refreshToken:
-                  type: object
-                  description: Trazzle Refresh Token
-                  example: "{{트래즐 서비스 리프래시토큰}}"
-                userId:
-                  type: number
-                  description: 액세스토큰 페이로드 유저 식별자
-                  example: 1
-                account:
-                  type: string
-                  description: 유저 소셜연동계정 식별자
-                  example: k-1234567
-              required:
-                - refreshToken
-                - userId
-                - account
+            schema:
+              $ref: '#/components/schemas/UpdateAccessTokenRequestDto'
       responses:
-        "200":
+        '200':
           description: 액세스토큰 갱신 정상응답값
           content:
             application/json:
-              schema: &a24
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                    description: 새로 갱신된 Trazzle 서비스 액세스토큰
-                required:
-                  - access_token
+              schema:
+                $ref: '#/components/schemas/UpdateAccessTokenResponseDto'
       tags:
         - 사용자 & 로그인
         - 액세스 토큰 갱신
@@ -375,37 +181,20 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: 여행 국가 통계 정상 응답데이터
           content:
             application/json:
-              schema: &a25
-                type: object
-                properties:
-                  travel:
-                    type: number
-                    description: 여행기록 개수
-                    example: 4
-                  countries:
-                    type: number
-                    description: 여행국가 개수
-                    example: 2
-                  world:
-                    type: string
-                    description: 세계여행 백분율(소수점아래 2자리만 표기)
-                    example: "0.84"
-                required:
-                  - travel
-                  - countries
-                  - world
-        "401":
-          description: ""
+              schema:
+                $ref: '#/components/schemas/GetUserTravelStatisticResponseDto'
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
@@ -417,7 +206,7 @@ paths:
       operationId: TravelNotesController_create
       summary: 여행기 생성
       parameters:
-        - &a3
+        - &ref_1
           name: user accessToken
           in: header
           description: Trazzle User Access Token (Sign-In Required)
@@ -457,11 +246,11 @@ paths:
                   description: 여행기 이미지6
                 startDate:
                   type: string
-                  example: 2024-03-20
+                  example: '2024-03-20'
                   description: 여행 시작일
                 endDate:
                   type: string
-                  example: 2024-03-25
+                  example: '2024-03-25'
                   description: 여행 종료일
                 title:
                   type: string
@@ -473,7 +262,7 @@ paths:
                   description: 여행기 내용
                 cityId:
                   type: number
-                  example: "1"
+                  example: '1'
                   description: 도시 ID
                 cityName:
                   type: string
@@ -489,67 +278,20 @@ paths:
                 - title
                 - mainImageIndex
       responses:
-        "200":
+        '200':
           description: 신규 여행기록
           content:
             application/json:
-              schema: &a4
-                type: object
-                properties:
-                  id:
-                    type: number
-                    description: 여행기록 고유번호 PK
-                    example: 1
-                  startDate:
-                    type: string
-                    description: 여행기록 시작날짜
-                    example: 2024-03-31
-                  endDate:
-                    type: string
-                    description: 여행기록 종료날짜
-                    example: 2024-04-30
-                  title:
-                    type: string
-                    description: 여행기록 제목
-                    example: 후쿠오카에서의 하루!
-                  review:
-                    type: string
-                    description: 여행기록 내용
-                    example: 후쿠오카의 인생 첫 료칸!!!
-                  cityId:
-                    type: number
-                    description: 도시 고유번호 PK
-                    example: 1
-                  cityName:
-                    type: string
-                    description: 도시명
-                    example: Fukuoka
-                  countryCode:
-                    type: string
-                    description: 국가 코드
-                    example: KR
-                  userId:
-                    type: number
-                    description: 작성자 고유번호 PK
-                    example: 1
-                required:
-                  - id
-                  - startDate
-                  - endDate
-                  - title
-                  - review
-                  - cityId
-                  - cityName
-                  - countryCode
-                  - userId
-        "401":
-          description: ""
+              schema:
+                $ref: '#/components/schemas/TravelNoteEntity'
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
@@ -561,40 +303,41 @@ paths:
       summary: 여행기 목록 조회
       description: 조회 대상 사용자의 여행기 목록 조회
       parameters:
-        - *a3
+        - *ref_1
         - name: userId
           required: true
           in: query
           schema:
             type: string
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
                 type: array
-                items: *a4
-        "401":
-          description: ""
+                items:
+                  $ref: '#/components/schemas/TravelNoteEntity'
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
         - 여행기
       security:
-        - bearer: []
+        - bearer: [ ]
   /api/travel-notes/{id}:
     get:
       operationId: TravelNotesController_getOneTravelNote
       summary: 여행기 단건 조회
       parameters:
-        - *a3
+        - *ref_1
         - name: id
           required: true
           in: path
@@ -603,30 +346,31 @@ paths:
           schema:
             type: number
       responses:
-        "200":
+        '200':
           description: id에 부합하는 단건 조회
           content:
             application/json:
-              schema: *a4
-        "401":
-          description: ""
+              schema:
+                $ref: '#/components/schemas/TravelNoteEntity'
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
         - 여행기
       security:
-        - bearer: []
+        - bearer: [ ]
     put:
       operationId: TravelNotesController_update
       summary: 여행기 수정
       parameters:
-        - *a3
+        - *ref_1
         - name: id
           required: true
           in: path
@@ -666,11 +410,11 @@ paths:
                   description: 여행기 이미지6
                 startDate:
                   type: string
-                  example: 2024-03-20
+                  example: '2024-03-20'
                   description: 여행 시작일
                 endDate:
                   type: string
-                  example: 2024-03-25
+                  example: '2024-03-25'
                   description: 여행 종료일
                 title:
                   type: string
@@ -682,7 +426,7 @@ paths:
                   description: 여행기 내용
                 cityId:
                   type: number
-                  example: "1"
+                  example: '1'
                   description: 도시 ID
                 cityName:
                   type: string
@@ -698,27 +442,27 @@ paths:
                 - title
                 - mainImageIndex
       responses:
-        "200":
-          description: ""
-        "401":
-          description: ""
+        '200':
+          description: ''
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
         - 여행기
       security:
-        - bearer: []
+        - bearer: [ ]
     delete:
       operationId: TravelNotesController_delete
       summary: 여행기 삭제
       parameters:
-        - *a3
+        - *ref_1
         - name: id
           required: true
           in: path
@@ -727,22 +471,22 @@ paths:
           schema:
             type: number
       responses:
-        "200":
-          description: ""
-        "401":
-          description: ""
+        '200':
+          description: ''
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
         - 여행기
       security:
-        - bearer: []
+        - bearer: [ ]
   /api/countries:
     get:
       operationId: CountriesController_findAll
@@ -777,39 +521,14 @@ paths:
           schema:
             type: number
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
                 type: array
-                items: &a26
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                      description: 국가 PK
-                      example: 116
-                      uniqueItems: true
-                    code:
-                      type: string
-                      description: 국가코드
-                      example: KR
-                      uniqueItems: true
-                    name:
-                      type: string
-                      description: 국가명
-                      example: South Korea
-                      uniqueItems: true
-                    continent:
-                      type: string
-                      description: 대륙명 검색옵션
-                      example: Asia
-                  required:
-                    - id
-                    - code
-                    - name
-                    - continent
+                items:
+                  $ref: '#/components/schemas/CountryEntity'
       tags:
         - Country
   /api/cities:
@@ -839,32 +558,14 @@ paths:
           schema:
             type: number
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
                 type: array
-                items: &a27
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                      description: 도시 PK
-                      example: 65854
-                      uniqueItems: true
-                    name:
-                      type: string
-                      description: 도시명
-                      example: Seoul
-                    countryCode:
-                      type: string
-                      description: 국가코드
-                      example: KR
-                  required:
-                    - id
-                    - name
-                    - countryCode
+                items:
+                  $ref: '#/components/schemas/CityEntity'
       tags:
         - City
   /api/magnets:
@@ -886,16 +587,16 @@ paths:
           schema:
             type: number
       responses:
-        "200":
-          description: ""
-        "401":
-          description: ""
+        '200':
+          description: ''
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 액세스 토큰이 유효하지 않습니다.
       tags:
@@ -908,9 +609,9 @@ paths:
       summary: 개인정보 처리방침 약관 조회
       parameters: []
       responses:
-        "200":
-          description: ""
-      tags: &a5
+        '200':
+          description: ''
+      tags: &ref_5
         - 이용약관
   /terms/service:
     get:
@@ -918,15 +619,15 @@ paths:
       summary: 서비스 이용 약관 조회
       parameters: []
       responses:
-        "200":
-          description: ""
-      tags: *a5
+        '200':
+          description: ''
+      tags: *ref_5
   /api/back-office/countries:
     post:
       operationId: BackOfficeCountryController_createNewCountry
       summary: 국가 생성
       parameters:
-        - &a6
+        - &ref_6
           name: admin accessToken
           in: header
           description: Trazzle Admin Access Token (Sign-In Required)
@@ -937,48 +638,31 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a28
-              type: object
-              properties:
-                code:
-                  type: string
-                  description: 국가 코드
-                  example: KR
-                name:
-                  type: string
-                  description: 국가명
-                  example: 대한민국
-                continent:
-                  type: string
-                  description: 대륙명
-                  example: Asia
-              required:
-                - code
-                - name
-                - continent
+            schema:
+              $ref: '#/components/schemas/CreateCountryDto'
       responses:
-        "201":
-          description: ""
-        "401": &a7
-          description: ""
+        '201':
+          description: ''
+        '401': &ref_7
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: &a8
+      tags: &ref_8
         - 백오피스 API - 국가
-      security: &a9
+      security: &ref_9
         - bearer: []
   /api/back-office/countries/{code}:
     patch:
       operationId: BackOfficeCountryController_updateCountryInfo
       summary: 국가 정보 수정
       parameters:
-        - *a6
+        - *ref_6
         - name: code
           required: true
           in: path
@@ -988,33 +672,20 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a29
-              type: object
-              properties:
-                code:
-                  type: string
-                  description: 국가 코드
-                  example: KR
-                name:
-                  type: string
-                  description: 국가명
-                  example: 대한민국
-                continent:
-                  type: string
-                  description: 대륙명
-                  example: Asia
+            schema:
+              $ref: '#/components/schemas/UpdateCountryDto'
       responses:
-        "200":
-          description: ""
-        "401": *a7
-      tags: *a8
-      security: *a9
+        '200':
+          description: ''
+        '401': *ref_7
+      tags: *ref_8
+      security: *ref_9
   /api/back-office/cities:
     post:
       operationId: BackOfficeCityController_createCity
       summary: 도시 생성
       parameters:
-        - &a10
+        - &ref_10
           name: admin accessToken
           in: header
           description: Trazzle Admin Access Token (Sign-In Required)
@@ -1025,42 +696,30 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a30
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 도시 이름
-                  example: 서울
-                countryCode:
-                  type: string
-                  description: 국가 코드
-                  example: KR
-              required:
-                - name
-                - countryCode
+            schema:
+              $ref: '#/components/schemas/CreateCityDto'
       responses:
-        "201":
-          description: ""
-        "401": &a11
-          description: ""
+        '201':
+          description: ''
+        '401': &ref_11
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: &a12
+      tags: &ref_12
         - 백오피스 API - 도시
-      security: &a13
+      security: &ref_13
         - bearer: []
     patch:
       operationId: BackOfficeCityController_updateCityInfo
       summary: 도시 정보 수정
       parameters:
-        - *a10
+        - *ref_10
         - name: id
           required: true
           in: path
@@ -1070,23 +729,14 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a31
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 도시 이름
-                  example: 서울
-                countryCode:
-                  type: string
-                  description: 국가 코드
-                  example: KR
+            schema:
+              $ref: '#/components/schemas/UpdateCityDto'
       responses:
-        "200":
-          description: ""
-        "401": *a11
-      tags: *a12
-      security: *a13
+        '200':
+          description: ''
+        '401': *ref_11
+      tags: *ref_12
+      security: *ref_13
   /api/back-office/admins:
     post:
       operationId: BackOfficeAdminController_createAdmin
@@ -1096,24 +746,12 @@ paths:
         required: true
         content:
           application/json:
-            schema: &a32
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 이름
-                  example: 김트레즐
-                account:
-                  type: string
-                  description: 계정
-                  example: trazzle
-              required:
-                - name
-                - account
+            schema:
+              $ref: '#/components/schemas/CreateAdminRequestBodyDto'
       responses:
-        "201":
-          description: ""
-      tags: &a14
+        '201':
+          description: ''
+      tags: &ref_14
         - 백오피스 API - 관리자
     get:
       operationId: BackOfficeAdminController_getAdmins
@@ -1126,17 +764,17 @@ paths:
           schema:
             type: string
       responses:
-        "401":
-          description: ""
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: *a14
+      tags: *ref_14
       security:
         - bearer: []
     patch:
@@ -1150,17 +788,17 @@ paths:
           schema:
             type: string
       responses:
-        "401":
-          description: ""
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: *a14
+      tags: *ref_14
       security:
         - bearer: []
     delete:
@@ -1174,17 +812,17 @@ paths:
           schema:
             type: string
       responses:
-        "401":
-          description: ""
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: *a14
+      tags: *ref_14
       security:
         - bearer: []
   /api/back-office/admins/{id}:
@@ -1204,17 +842,17 @@ paths:
           schema:
             type: string
       responses:
-        "401":
-          description: ""
+        '401':
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: *a14
+      tags: *ref_14
       security:
         - bearer: []
   /api/back-office/magnets:
@@ -1222,7 +860,7 @@ paths:
       operationId: BackOfficeMagnetController_createMagnet
       summary: 마그넷 생성
       parameters:
-        - &a15
+        - &ref_15
           name: admin accessToken
           in: header
           description: Trazzle Admin Access Token (Sign-In Required)
@@ -1230,65 +868,44 @@ paths:
           schema:
             type: string
       responses:
-        "201":
-          description: ""
-        "401": &a16
-          description: ""
+        '201':
+          description: ''
+        '401': &ref_16
+          description: ''
           content:
             application/json:
               schema:
                 example:
                   status: 401
-                  timestamp: 2024-03-30T22:00:00.000Z
+                  timestamp: '2024-03-30T22:00:00.000Z'
                   errors:
                     - message: 접근이 불가능합니다.
-      tags: &a17
+      tags: &ref_17
         - 백오피스 API - 마그넷
-      security: &a18
+      security: &ref_18
         - bearer: []
     patch:
       operationId: BackOfficeMagnetController_updateMagnet
       summary: 마그넷 정보 수정
       parameters:
-        - *a15
+        - *ref_15
       responses:
-        "200":
-          description: ""
-        "401": *a16
-      tags: *a17
-      security: *a18
+        '200':
+          description: ''
+        '401': *ref_16
+      tags: *ref_17
+      security: *ref_18
     delete:
       operationId: BackOfficeMagnetController_deleteMagnet
       summary: 마그넷 삭제
       parameters:
-        - *a15
+        - *ref_15
       responses:
-        "200":
-          description: ""
-        "401": *a16
-      tags: *a17
-      security: *a18
+        '200':
+          description: ''
+        '401': *ref_16
+      tags: *ref_17
+      security: *ref_18
+
 components:
-  securitySchemes:
-    bearer:
-      scheme: bearer
-      bearerFormat: JWT
-      type: http
-  schemas:
-    UserEntity: *a19
-    SignInOrSignUpKakaoRequestBodyDto: *a20
-    SocialLoginResponseDto: *a2
-    SignInOrSignUpAppleRequestBodyDto: *a1
-    SignInOrSignUpGoogleRequestBodyDto: *a21
-    UpdateUserRequestBodyDto: *a22
-    UpdateAccessTokenRequestDto: *a23
-    UpdateAccessTokenResponseDto: *a24
-    GetUserTravelStatisticResponseDto: *a25
-    TravelNoteEntity: *a4
-    CountryEntity: *a26
-    CityEntity: *a27
-    CreateCountryDto: *a28
-    UpdateCountryDto: *a29
-    CreateCityDto: *a30
-    UpdateCityDto: *a31
-    CreateAdminRequestBodyDto: *a32
+  $ref: './components/index.yaml'

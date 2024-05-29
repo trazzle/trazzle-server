@@ -1,0 +1,31 @@
+UserEntity:
+  type: object
+  properties:
+    id:
+      type: number
+      description: 유저 PK
+      example: 1
+    name:
+      type: string
+      description: 유저이름
+      example: 최은강
+    account:
+      type: string
+      description: 유저계정
+    intro:
+      type: string
+      description: 유저 소개글
+      example: Trazzle로 세계정복!
+    profileImageURL:
+      type: string
+      description: 유저 프로필 이미지
+    role:
+      type: string
+      description: 유저 권한
+  required:
+    - id
+    - name
+    - account
+    - intro
+    - profileImageURL
+    - role
