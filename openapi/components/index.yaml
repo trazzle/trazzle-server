@@ -1,8 +1,8 @@
 securitySchemes:
-  bearer:
-    scheme: bearer
-    bearerFormat: JWT
+  bearerAuth:            # arbitrary name for the security scheme
     type: http
+    scheme: bearer
+    bearerFormat: JWT    # optional, arbitrary value for documentation purposes
 schemas:
   UserEntity:
     type: object

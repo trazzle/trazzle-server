@@ -1,0 +1,34 @@
+operationId: UserStatisticsController_getUserTravelStatistics
+summary: 여행 국가 통계 조회
+parameters:
+  - name: user accessToken
+    in: header
+    description: Trazzle User Access Token (Sign-In Required)
+    required: true
+    schema:
+      type: string
+responses:
+  '200':
+    description: 여행 국가 통계 정상 응답데이터
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 유저 PK
+              example: 1
+  '401':
+    description: ''
+    content:
+      application/json:
+        schema:
+          example:
+            status: 401
+            timestamp: '2024-03-30T22:00:00.000Z'
+            errors:
+              - message: 액세스 토큰이 유효하지 않습니다.
+tags:
+  - 사용자 여행 통계
+

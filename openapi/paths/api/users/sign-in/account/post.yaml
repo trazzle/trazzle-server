@@ -1,0 +1,13 @@
+operationId: UsersController_signInAccount
+parameters:
+  - name: account
+    required: true
+    in: query
+    schema:
+      type: string
+responses:
+  '201':
+    description: ''
+tags:
+  - 사용자 & 로그인
+  - 로그인 (테스트용)

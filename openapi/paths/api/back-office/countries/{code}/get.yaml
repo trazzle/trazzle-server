@@ -1,0 +1,13 @@
+description: New endpoint
+responses:
+  200:
+    description: New response
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 유저 PK
+              example: 1

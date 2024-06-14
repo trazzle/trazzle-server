@@ -1,0 +1,36 @@
+operationId: TravelNotesController_getOneTravelNote
+summary: 여행기 단건 조회
+parameters:
+  - name: id
+    required: true
+    in: path
+    description: 여행기 고유번호 PK
+    example: 1
+    schema:
+      type: number
+responses:
+  '200':
+    description: id에 부합하는 단건 조회
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 유저 PK
+              example: 1
+  '401':
+    description: ''
+    content:
+      application/json:
+        schema:
+          example:
+            status: 401
+            timestamp: '2024-03-30T22:00:00.000Z'
+            errors:
+              - message: 액세스 토큰이 유효하지 않습니다.
+tags:
+  - 여행기
+security:
+  - bearer: [ ]

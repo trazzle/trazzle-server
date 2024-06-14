@@ -1,0 +1,25 @@
+operationId: UsersController_signOut
+summary: 로그아웃
+parameters:
+  - name: user accessToken
+    in: header
+    description: Trazzle User Access Token (Sign-In Required)
+    required: true
+    schema:
+      type: string
+responses:
+  '200':
+    description: 액세스 토큰 삭제
+  '401':
+    description: ''
+    content:
+      application/json:
+        schema:
+          example:
+            status: 401
+            timestamp: '2024-03-30T22:00:00.000Z'
+            errors:
+              - message: 액세스 토큰이 유효하지 않습니다.
+
+security:
+  - bearer: []

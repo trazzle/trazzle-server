@@ -1,0 +1,22 @@
+operationId: BackOfficeAdminController_updateAdminInfo
+summary: 관리자 회원 정보 수정
+parameters:
+  - name: admin accessToken
+    in: header
+    description: Trazzle Admin Access Token (Sign-In Required)
+    required: true
+    schema:
+      type: string
+responses:
+  '401':
+    description: ''
+    content:
+      application/json:
+        schema:
+          example:
+            status: 401
+            timestamp: '2024-03-30T22:00:00.000Z'
+            errors:
+              - message: 접근이 불가능합니다.
+tags:
+  - 백오피스 API - 관리자

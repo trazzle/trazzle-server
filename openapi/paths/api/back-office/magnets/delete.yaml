@@ -1,0 +1,9 @@
+operationId: BackOfficeMagnetController_deleteMagnet
+summary: 마그넷 삭제
+
+responses:
+  '200':
+    description: ''
+
+tags:
+  - 백오피스 API - 마그넷

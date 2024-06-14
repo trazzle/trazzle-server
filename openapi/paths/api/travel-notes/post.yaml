@@ -1,0 +1,92 @@
+operationId: TravelNotesController_create
+summary: 여행기 생성
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          image1:
+            type: array
+            format: binary
+            description: 여행기 이미지1
+          image2:
+            type: array
+            format: binary
+            description: 여행기 이미지2
+          image3:
+            type: array
+            format: binary
+            description: 여행기 이미지3
+          image4:
+            type: array
+            format: binary
+            description: 여행기 이미지4
+          image5:
+            type: array
+            format: binary
+            description: 여행기 이미지5
+          image6:
+            type: array
+            format: binary
+            description: 여행기 이미지6
+          startDate:
+            type: string
+            example: '2024-03-20'
+            description: 여행 시작일
+          endDate:
+            type: string
+            example: '2024-03-25'
+            description: 여행 종료일
+          title:
+            type: string
+            example: 서울여행
+            description: 여행기 제목
+          review:
+            type: string
+            example: 서울여행 재밌다.
+            description: 여행기 내용
+          cityId:
+            type: number
+            example: '1'
+            description: 도시 ID
+          cityName:
+            type: string
+            example: 서울
+            description: 도시명(도시ID가 없을 경우에만 입력 -> 기타도시 선택시)
+          mainImageIndex:
+            type: number
+            example: 1
+            description: 메인 이미지 인덱스 (1 - 6)
+        required:
+          - startDate
+          - endDate
+          - title
+          - mainImageIndex
+responses:
+  '200':
+    description: 신규 여행기록
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 유저 PK
+              example: 1
+  '401':
+    description: ''
+    content:
+      application/json:
+        schema:
+          example:
+            status: 401
+            timestamp: '2024-03-30T22:00:00.000Z'
+            errors:
+              - message: 액세스 토큰이 유효하지 않습니다.
+tags:
+  - 여행기
+security:
+  - bearer: [ ]

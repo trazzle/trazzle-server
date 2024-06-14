@@ -1,0 +1,38 @@
+operationId: CitiesController_findAll
+summary: 도시 검색
+parameters:
+  - name: countryCode
+    required: false
+    in: query
+    description: 국가코드
+    example: KR
+    schema:
+      type: string
+  - name: name
+    required: false
+    in: query
+    description: 도시이름
+    example: Seoul
+    schema:
+      type: string
+  - name: cursor
+    required: false
+    in: query
+    description: 페이지 커서(도시 넘버 PK)
+    example: 65854
+    schema:
+      type: number
+responses:
+  '200':
+    description: ''
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 유저 PK
+              example: 1
+tags:
+  - City

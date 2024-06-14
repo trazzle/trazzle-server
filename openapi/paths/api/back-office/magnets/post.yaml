@@ -1,0 +1,24 @@
+operationId: BackOfficeMagnetController_createMagnet
+summary: 마그넷 생성
+parameters:
+  - name: admin accessToken
+    in: header
+    description: Trazzle Admin Access Token (Sign-In Required)
+    required: true
+    schema:
+      type: string
+responses:
+  '201':
+    description: ''
+  '401':
+    description: ''
+    content:
+      application/json:
+        schema:
+          example:
+            status: 401
+            timestamp: '2024-03-30T22:00:00.000Z'
+            errors:
+              - message: 접근이 불가능합니다.
+tags:
+  - 백오피스 API - 마그넷

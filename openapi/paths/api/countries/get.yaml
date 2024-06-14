@@ -1,0 +1,45 @@
+operationId: CountriesController_findAll
+summary: 국가 검색
+parameters:
+  - name: name
+    required: false
+    in: query
+    description: 국가이름
+    example: South Korea
+    schema:
+      type: string
+  - name: code
+    required: false
+    in: query
+    description: 국가코드
+    example: KR
+    schema:
+      type: string
+  - name: continent
+    required: false
+    in: query
+    description: 대륙이름
+    example: Asia
+    schema:
+      type: string
+  - name: cursor
+    required: false
+    in: query
+    description: 페이지 커서(국가 넘버 PK)
+    example: 116
+    schema:
+      type: number
+responses:
+  '200':
+    description: ''
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 유저 PK
+              example: 1
+tags:
+  - Country
